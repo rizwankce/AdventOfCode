@@ -1045,40 +1045,8 @@ func partOne() -> Int {
 }
 
 func partTwo() -> Int {
-    func find(_ limit: Int) -> Int {
-        var result = 0
-        func check(_ number: Int, pre: [Int]) -> Bool {
-            if pre.count != limit {
-                fatalError()
-            }
-            var test = false
-            var index = 0
-            while index < pre.count {
-                pre[index+1 ..< pre.count].forEach {
-                    if pre[index] + $0 == number {
-                        test = true
-                    }
-                }
-                index += 1
-            }
-            return test
-        }
-
-        var index = limit
-
-        while index < input.count {
-            let current = input[index]
-            if !check(current, pre: Array(input[index-limit ..< index])) {
-                result = current
-                break
-            }
-            index += 1
-        }
-
-        return result
-    }
     var result: [Int] = []
-    let sum = find(25)
+    let sum = partOne()
     var p = 2
     var index = 0
     while true {
