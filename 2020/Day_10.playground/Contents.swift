@@ -114,7 +114,7 @@ print(input)
 func partOne() -> Int {
     var sorted = input.sorted()
     sorted.append(sorted.max()! + 3)
-    print(sorted)
+
     var oneJ = 0
     var threeJ = 0
     var cur = 0
@@ -129,8 +129,7 @@ func partOne() -> Int {
             cur = i
         }
     }
-    print(oneJ)
-    print(threeJ)
+    
     return oneJ * threeJ
 }
 
@@ -144,7 +143,7 @@ func partTwo() -> Int {
     }
 
     let last = sorted.last!
-    print(result)
+
     return result[last]!
 }
 

@@ -325,5 +325,5 @@ func partTwo() -> Int {
 }
 
 
-//print("Part One Answer is: \(partOne())")
+print("Part One Answer is: \(partOne())")
 print("Part Two Answer is: \(partTwo())")
