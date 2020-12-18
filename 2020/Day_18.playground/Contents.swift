@@ -378,83 +378,112 @@ let input = """
 
 print(input)
 
-func partOne() -> Int {
-    func math(_ exp: [String]) -> Int {
-        var result: Int?
-        var op: String?
-        for char in exp {
-            if let num = Int(char) {
-                if let r = result {
-                    switch op! {
-                    case "*": result = r * num
-                    case "+": result = r + num
-                    default:
-                        fatalError("unknown")
-                    }
-                }
-                else {
-                    result = num
-                }
+func findP(_ exp: [String]) -> (Int,Int)? {
+    var stack: [String] = []
+    var start: Int? = nil
+    var end: Int? = nil
+
+    for (index,char) in exp.enumerated() {
+        if char == "(" {
+            if stack.isEmpty {
+                start = index + 1
             }
-            else {
-                op = char
-            }
+            stack.append("(")
         }
-
-        return result!
-    }
-
-    func findP(_ exp: [String]) -> (Int,Int)? {
-        var stack: [String] = []
-        var start: Int? = nil
-        var end: Int? = nil
-
-        for (index,char) in exp.enumerated() {
-            if char == "(" {
-                if stack.isEmpty {
-                    start = index + 1
-                }
-                stack.append("(")
-            }
-            else if char == ")" {
-                stack.popLast()
-                if stack.isEmpty {
-                    end = index - 1
-                    break
-                }
-            }
-        }
-
-        return (start != nil && end != nil) ? (start!, end!) : nil
-    }
-
-    func solve(_ expression: [String]) -> Int {
-        var exp = expression
-        while true {
-            if let para = findP(exp) {
-                let r = solve(Array(exp[para.0...para.1]))
-                exp.replaceSubrange((para.0-1...para.1+1), with: ["X"])
-                exp[exp.firstIndex(of: "X")!] = String(r)
-            }
-            else {
+        else if char == ")" {
+            stack.popLast()
+            if stack.isEmpty {
+                end = index - 1
                 break
             }
         }
-        return math(exp)
     }
 
+    return (start != nil && end != nil) ? (start!, end!) : nil
+}
+
+func mathLTR(_ exp: [String]) -> Int {
+    var result: Int?
+    var op: String?
+    for char in exp {
+        if let num = Int(char) {
+            if let r = result {
+                switch op! {
+                case "*": result = r * num
+                case "+": result = r + num
+                default:
+                    fatalError("unknown")
+                }
+            }
+            else {
+                result = num
+            }
+        }
+        else {
+            op = char
+        }
+    }
+
+    return result!
+}
+
+func mathSumFirst(_ expression: [String]) -> Int {
+    var exp = solve(expression: expression, with: "+")
+    exp = solve(expression: exp, with: "*")
+    return Int(exp.first!)!
+}
+
+func solve(expression: [String],with op: String) -> [String] {
+    var exp = expression
+
+    while let sign = exp.firstIndex(of: op) {
+        let lhs = Int(exp[sign - 1])!
+        let rhs = Int(exp[sign + 1])!
+        let result = op == "*" ? lhs * rhs : lhs + rhs
+        exp[sign - 1] = String(result)
+        exp.remove(at: sign + 1)
+        exp.remove(at: sign)
+    }
+
+    return exp
+}
+
+func solve(_ expression: [String], _ isLTR: Bool) -> Int {
+    var exp = expression
+    while true {
+        if let para = findP(exp) {
+            let r = solve(Array(exp[para.0...para.1]), isLTR)
+            exp.replaceSubrange((para.0-1...para.1+1), with: ["X"])
+            exp[exp.firstIndex(of: "X")!] = String(r)
+        }
+        else {
+            break
+        }
+    }
+    return isLTR ? mathLTR(exp) : mathSumFirst(exp)
+}
+
+
+func partOne() -> Int {
     var result = 0
 
     for line in input {
         let copy = line.replacingOccurrences(of: "(", with: "( ").replacingOccurrences(of: ")", with: " )").components(separatedBy: " ")
-        result += solve(copy)
+        result += solve(copy, true)
     }
 
     return result
 }
 
 func partTwo() -> Int {
-    return 0
+    var result = 0
+
+    for line in input {
+        let copy = line.replacingOccurrences(of: "(", with: "( ").replacingOccurrences(of: ")", with: " )").components(separatedBy: " ")
+        result += solve(copy, false)
+    }
+
+    return result
 }
 
 print("Part One answer is: \(partOne())")
