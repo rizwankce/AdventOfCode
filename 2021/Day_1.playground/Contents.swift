@@ -2044,3 +2044,27 @@ func partTwo() -> Int {
 
 print("Part One answer is: \(partOne())")
 print("Part Two answer is: \(partTwo())")
+
+func fancy() {
+    func fancySolvePartOne() -> Int {
+        input.enumerated().filter { $0.element > input[$0.offset - 1 == -1 ? 0 : $0.offset - 1] }.count
+    }
+
+    func fancySolvePartTwo() -> Int {
+        let result = input.enumerated().map { e -> Int in
+            if e.offset > input.count - 3 {
+                return 0
+            }
+            return input[e.offset ..< e.offset + 3].reduce(0, +)
+        }
+        return result.enumerated().filter {
+            return $0.element < result[$0.offset + 1 >= result.count ? $0.offset : $0.offset + 1]
+        }.count
+    }
+    print("Fancy")
+    print("Part One answer is: \(fancySolvePartOne())")
+    print("Part Two answer is: \(fancySolvePartTwo())")
+}
+
+fancy()
+
