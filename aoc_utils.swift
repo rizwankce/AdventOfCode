@@ -24,6 +24,157 @@ struct Point: CustomStringConvertible, Equatable, Hashable {
     }
 }
 
+/*
+ struct Point: CustomStringConvertible, Equatable, Hashable {
+     var x: Int
+     var y: Int
+     var z: Int
+
+     var description: String {
+         get {
+             return "X: \(self.x) Y: \(self.y) Z: \(self.z)"
+         }
+     }
+
+     func neighbors() -> [Point] {
+         var n: [Point] = []
+         for dx in [-1,0,1] {
+             for dy in [-1,0,1] {
+                 for dz in [-1,0,1] {
+                     if dx != 0 || dy != 0 || dz != 0 {
+                         n.append(Point.init(x: x + dx, y: y + dy, z: z + dz))
+                     }
+                 }
+             }
+         }
+         return n
+     }
+ }
+ */
+
+extension Point {
+    mutating func move(_ count: Int,_ dir: Direction) {
+        switch dir {
+        case .east: x += count
+        case .west: x -= count
+        case .south: y += count
+        case .north: y -= count
+        default: fatalError()
+        }
+    }
+}
+
+enum Direction: String {
+    case east = "E"
+    case west = "W"
+    case south = "S"
+    case north = "N"
+    case left = "L"
+    case right = "R"
+    case forward = "F"
+
+    mutating func turn(_ deg: Int, _ dir: Direction) {
+
+        assert(deg != 90 || deg != 180 || deg != 270)
+
+        switch self {
+        case .east:
+            if deg == 90 {
+                if dir == .right {
+                    self = .south
+                }
+                if dir == .left {
+                    self = .north
+                }
+            }
+
+            if deg == 270 {
+                if dir == .right {
+                    self = .north
+                }
+                if dir == .left {
+                    self = .south
+                }
+            }
+
+            if deg == 180 {
+                self = .west
+            }
+
+        case .west:
+            if deg == 90 {
+                if dir == .right {
+                    self = .north
+                }
+                if dir == .left {
+                    self = .south
+                }
+            }
+
+            if deg == 270 {
+                if dir == .right {
+                    self = .south
+                }
+                if dir == .left {
+                    self = .north
+                }
+            }
+
+            if deg == 180 {
+                self = .east
+            }
+
+        case .south:
+            if deg == 90 {
+                if dir == .right {
+                    self = .west
+                }
+                if dir == .left {
+                    self = .east
+                }
+            }
+
+            if deg == 180 {
+                self = .north
+            }
+
+            if deg == 270 {
+                if dir == .right {
+                    self = .east
+                }
+                if dir == .left {
+                    self = .west
+                }
+            }
+        case .north:
+            if deg == 90 {
+                if dir == .right {
+                    self = .east
+                }
+                if dir == .left {
+                    self = .west
+                }
+            }
+
+            if deg == 270 {
+                if dir == .right {
+                    self = .west
+                }
+                if dir == .left {
+                    self = .east
+                }
+            }
+
+            if deg == 180 {
+                self = .south
+            }
+
+        default:
+            fatalError()
+        }
+    }
+}
+
 struct Tile: CustomStringConvertible, Equatable, Hashable {
     var row: Int
     var col: Int
