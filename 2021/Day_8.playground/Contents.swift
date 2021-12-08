@@ -14,8 +14,7 @@ input.forEach { i in
     let r = i.components(separatedBy:" | ")
     let left = r[0].components(separatedBy: " ")
     let right = r[1].components(separatedBy: " ")
-    let seg = Segment.init(left: left, right: right)
-    segments.append(seg)
+    segments.append(Segment.init(left: left, right: right))
 }
 
 
@@ -55,91 +54,77 @@ func solve(_ seg: Segment) -> Int {
 
     var config: [Int: Set<Character>] = [:]
 
-    let test = seg.right + seg.left
+    let segments = (seg.right + seg.left).map { Set($0.map { $0 }) }
 
-    for t in test {
-        if notes.values.contains(t.count) {
-            let key = notes.filter { $0.value == t.count }.first!.key
-            config[key] = Set(t.map { $0 })
+    // find 1,4,7,8
+    for s in segments {
+        if notes.values.contains(s.count) {
+            let key = notes.filter { $0.value == s.count }.first!.key
+            config[key] = s
         }
     }
-
 
     // find 9
     let t9 = config[4]!.union(config[7]!)
 
-    for t in test {
-        let set = Set(t.map { $0 })
-        if !config.values.contains(set) {
-            if set.count == 6 && t9.symmetricDifference(set).count == 1 {
-                config[9] = set
-            }
+    for s in segments {
+        if !config.values.contains(s) && s.count == 6 && t9.symmetricDifference(s).count == 1 {
+            config[9] = s
+            break
         }
     }
-
 
     // find 6
     let t1 = config[1]!
 
-    for t in test {
-        let set = Set(t.map { $0 })
-        if !config.values.contains(set) {
-            if set.count == 6 && t1.union(set).count == 7 {
-                config[6] = set
-            }
+    for s in segments {
+        if !config.values.contains(s) && s.count == 6 && t1.union(s).count == 7 {
+            config[6] = s
+            break
         }
     }
 
     // find 0
-    for t in test {
-        let set = Set(t.map { $0 })
-        if !config.values.contains(set) {
-            if set.count == 6 {
-                config[0] = set
-            }
+    for s in segments {
+        if !config.values.contains(s) && s.count == 6 {
+            config[0] = s
+            break
         }
     }
 
     // find 5
     let t6 = config[6]!
 
-    for t in test {
-        let set = Set(t.map { $0 })
-        if !config.values.contains(set) {
-            if set.count == 5 && t6.symmetricDifference(set).count == 1 {
-                config[5] = set
-            }
+    for s in segments {
+        if !config.values.contains(s) && s.count == 5 && t6.symmetricDifference(s).count == 1 {
+            config[5] = s
+            break
         }
     }
 
     // find 2
     let t5 = config[5]!
 
-    for t in test {
-        let set = Set(t.map { $0 })
-        if !config.values.contains(set) {
-            if set.count == 5 && t5.union(set).count == 7 {
-                config[2] = set
-            }
+    for s in segments {
+        if !config.values.contains(s) && s.count == 5 && t5.union(s).count == 7 {
+            config[2] = s
+            break
         }
     }
 
     // find 3
 
-    for t in test {
-        let set = Set(t.map { $0 })
-        if !config.values.contains(set) {
-            if set.count == 5 {
-                config[3] = set
-            }
+    for s in segments {
+        if !config.values.contains(s) && s.count == 5 {
+            config[3] = s
+            break
         }
     }
 
-    let right = seg.right
+    // calc output
     var output: [Int] = []
-    for t in right {
-        let set = Set(t.map { $0 })
-        if let num = config.filter({ $0.value == set }).first {
+    for s in seg.right.map({ Set($0.map { $0 }) }) {
+        if let num = config.filter({ $0.value == s }).first {
             output.append(num.key)
         }
     }
