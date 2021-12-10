@@ -47,7 +47,14 @@ func partOne() -> Int {
 }
 
 func partTwo() -> Int {
-    var incomplete: [[String]] = []
+    var scores: [Int] = []
+    let points: [String: Int] = [
+        ")": 1,
+        "]": 2,
+        "}": 3,
+        ">": 4
+    ]
+
     for line in input {
         var stack: [String] = []
         var illegal = false
@@ -74,52 +81,30 @@ func partTwo() -> Int {
         }
 
         if !illegal {
-            incomplete.append(line)
+            var complete: [String] = []
+
+            for char in stack {
+                if char == "{" {
+                    complete.append("}")
+                }
+                else if char == "(" {
+                    complete.append(")")
+                }
+                else if char == "[" {
+                    complete.append("]")
+                }
+                else if char == "<" {
+                    complete.append(">")
+                }
+            }
+            complete = complete.reversed()
+
+            var score = 0
+            for char in complete {
+                score = (score * 5) + points[char]!
+            }
+            scores.append(score)
         }
-    }
-
-    var scores: [Int] = []
-    let points: [String: Int] = [
-        ")": 1,
-        "]": 2,
-        "}": 3,
-        ">": 4
-    ]
-
-    for line in incomplete {
-        var stack: [String] = []
-        for char in line {
-            if char == "[" || char == "(" || char == "{" || char == "<" {
-                stack.append(char)
-            }
-            else {
-                _ = stack.popLast()
-            }
-        }
-
-        var complete: [String] = []
-
-        for char in stack {
-            if char == "{" {
-                complete.append("}")
-            }
-            else if char == "(" {
-                complete.append(")")
-            }
-            else if char == "[" {
-                complete.append("]")
-            }
-            else if char == "<" {
-                complete.append(">")
-            }
-        }
-        complete = complete.reversed()
-
-        var score = 0
-        for char in complete {
-            score = (score * 5) + points[char]!
-        }
-        scores.append(score)
     }
 
     return scores.sorted()[scores.middleIndex]
