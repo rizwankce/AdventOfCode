@@ -60,17 +60,10 @@ func makeStep() -> Int {
     var scan: [Point] = []
 
     for kv in grid {
-        let v = kv.key.adjacent().map { grid[$0] }
-        if v.count == 8 && v.allSatisfy({
-            $0 == 9
-        }) {
+        if kv.key.adjacent().map({ grid[$0] }).allSatisfy({ $0 == 9 }) {
             scan.append(kv.key)
         }
-    }
-
-
-    for kv in grid {
-        if !scan.contains(kv.key) {
+        else {
             grid[kv.key]! += 1
 
             if grid[kv.key]! > 9 {
