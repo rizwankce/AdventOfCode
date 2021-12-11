@@ -1,4 +1,6 @@
-// grid 
+import Foundation
+
+// MARK: -  grid
 
 struct Point: CustomStringConvertible, Equatable, Hashable {
     var x: Int
@@ -6,21 +8,78 @@ struct Point: CustomStringConvertible, Equatable, Hashable {
 
     var description: String {
         get {
-            return "X: \(self.x) Y: \(self.y)"
+            return "(X:\(self.x) Y:\(self.y))"
         }
     }
 
+    func neighbours() -> [Point] {
+        var points: [Point] = []
+        for x in [-1,0,1] {
+            for y in [-1,0,1] {
+                points.append(Point.init(x: self.x + x, y: self.y + y))
+            }
+        }
+        points.removeAll(where: { $0 == self })
+        return points
+    }
+
     func adjacent() -> [Point] {
-        return [
-            Point.init(x: x-1, y: y),
-            Point.init(x: x+1, y: y),
-            Point.init(x: x, y: y-1),
-            Point.init(x: x, y: y+1),
-            Point.init(x: x-1, y: y-1),
-            Point.init(x: x+1, y: y+1),
-            Point.init(x: x+1, y: y-1),
-            Point.init(x: x-1, y: y+1)
-        ]
+        var points: [Point] = []
+        for x in [-1,0,1] {
+            for y in [-1,0,1] {
+                if x == 0 || y == 0 {
+                    points.append(Point.init(x: self.x + x, y: self.y + y))
+                }
+            }
+        }
+        points.removeAll(where: { $0 == self })
+        return points
+    }
+}
+
+struct Grid {
+    typealias Cell = [Point: Int]
+
+    var grid: Cell = [:]
+    let rowCount: Int
+    let colCount: Int
+
+    init(_ input: [String]) {
+        self.rowCount = input[0].count
+        self.colCount = input.count
+
+        input.enumerated().forEach { (i,line) in
+            line.enumerated().forEach { (j,char) in
+                let p = Point.init(x: i, y: j)
+                grid[p] = Int(String(char))!
+            }
+        }
+    }
+
+    func debugPrint() {
+        print("grid start")
+        print("rc", separator: "", terminator: " ")
+        (0 ..< rowCount).map {
+            print($0, separator: " ", terminator: " ")
+        }
+        print("\n\n")
+        for r in (0 ..< rowCount) {
+            print(r, separator: " ", terminator: "  ")
+            for c in (0 ..< colCount) {
+                let p = Point(x: r, y: c)
+                print(grid[p]!, separator: " ", terminator: " ")
+            }
+            print("\n")
+        }
+        print("grid end")
+    }
+
+    func adjacentValues(_ p: Point) -> [Int] {
+        p.adjacent().compactMap { grid[$0] }
+    }
+
+    func neighbourValues(_ p: Point) -> [Int] {
+        p.neighbours().compactMap { grid[$0] }
     }
 }
 
@@ -52,6 +111,8 @@ struct Point: CustomStringConvertible, Equatable, Hashable {
  }
  */
 
+// MARK: -  Direction
+
 extension Point {
     mutating func move(_ count: Int,_ dir: Direction) {
         switch dir {
@@ -63,6 +124,7 @@ extension Point {
         }
     }
 }
+
 
 enum Direction: String {
     case east = "E"
@@ -175,30 +237,6 @@ enum Direction: String {
     }
 }
 
-struct Tile: CustomStringConvertible, Equatable, Hashable {
-    var row: Int
-    var col: Int
-
-    var description: String {
-        get {
-            return "Row: \(self.row) Col: \(self.col)"
-        }
-    }
-
-    func adjacent() -> [Point] {
-        return [
-            Tile.init(x: x-1, y: y),
-            Tile.init(x: x+1, y: y),
-            Tile.init(x: x, y: y-1),
-            Tile.init(x: x, y: y+1),
-            Tile.init(x: x-1, y: y-1),
-            Tile.init(x: x+1, y: y+1),
-            Tile.init(x: x+1, y: y-1),
-            Tile.init(x: x-1, y: y+1)
-        ]
-    }
-}
-
 var grid: [Point: String] = [:]
 var maxX: Int = input.count
 var maxY: Int = input[0].count
@@ -225,13 +263,14 @@ func printGrid(_ grid: [Point: String]) {
     print("grid end")
 }
 
-// comparing two dictionary
+// MARK: - Comparing two dictionary
 
 public func ==<K, L: Hashable, R: Hashable>(lhs: [K: L], rhs: [K: R] ) -> Bool {
     (lhs as NSDictionary).isEqual(to: rhs)
 }
 
-// extensions
+// MARK: - Int to Bits
+
 extension Int {
     var bits: [Int] {
         var array: [Int] = []
@@ -244,6 +283,8 @@ extension Int {
     }
 }
 
+// MARK: - Array int value
+
 extension Array where Element == Int {
     var intValue: Int {
         var value = 0
@@ -254,6 +295,8 @@ extension Array where Element == Int {
         return value
     }
 }
+
+// MARK: - Uniques from Array
 
 extension Array where Element: Hashable {
     var uniques: Array {
@@ -269,7 +312,7 @@ extension Array where Element: Hashable {
     }
 }
 
-// combinators
+// MARK: - Combinators
 
 func combos<T>(elements: ArraySlice<T>, k: Int) -> [[T]] {
     if k == 0 {
