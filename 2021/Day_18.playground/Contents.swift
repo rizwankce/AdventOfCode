@@ -12,10 +12,9 @@ let input = """
 [[[[5,4],[7,7]],8],[[8,3],8]]
 [[9,3],[[9,9],[6,[4,9]]]]
 [[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]
-
 """.components(separatedBy: .newlines)
 
-print(input)
+//print(input)
 
 extension Character {
     func isNumber() -> Bool {
@@ -103,7 +102,6 @@ class SnailFishCalculator {
                 }
             }
             self.input = parts
-            print(input)
         }
 
         var description: String {
@@ -126,9 +124,7 @@ class SnailFishCalculator {
                         let pair = stack[stack.count - 3 ..< stack.count].map { $0 }
                         let first = pair[0]
                         let second = pair[1]
-                        print(pair)
                         if first.isNumber() && second.isNumber() {
-                            print(first,second)
                             value = first.toNumber() * 3 + second.toNumber() * 2
                             stack = stack.dropLast(4)
                             stack.append(String(value))
@@ -149,7 +145,6 @@ class SnailFishCalculator {
                     stop = true
                     break
                 }
-                print(input)
             }
 
             return stop ? 0 : input[0].toNumber()
@@ -162,8 +157,6 @@ class SnailFishCalculator {
             left.insert("[", at: 0)
             left.append(contentsOf: right)
             left.append("]")
-
-            print("Added :\(left.joined())")
 
             return Line.init(left)
         }
@@ -185,20 +178,11 @@ class SnailFishCalculator {
 
                 parts.append(char)
                 if stack.count > 4 {
-//                    print(stack)
-//                    print("found")
-//                    print(parts)
-                    //[11,3] or [9,0]
-                    // ex 0,7
-                    // [ [ [ [ 13 7 ] [ 14 12 ] ] [ [ 10 0 ] 15 ] ] [ 10 [ [ 0 21 ] [ [ 0 7 ] ] ] ] ]
-
-                    print(input[i+1],input[i+2])
                     if !input[i+1].isNumber() || !input[i+2].isNumber() {
                         continue
                     }
                     parts.removeLast()
                     let currentPair = (input[i+1].toNumber(),input[i+2].toNumber())
-                    print(currentPair)
                     var newPair = (0,0)
                     if let leftIndex = parts.lastIndex(where: { $0.isNumber() }) {
                         let left = parts[leftIndex]
@@ -207,39 +191,26 @@ class SnailFishCalculator {
                         // [[[[0,7],4],[7,[[
                         var partsL = parts[parts.startIndex ..< leftIndex]
                         let partsR = parts[parts.index(after: leftIndex) ..< parts.endIndex]
-//                        print(partsL)
-//                        print(partsR)
                         partsL.append("\(newPair.0)")
                         partsL.append(contentsOf: partsR)
-//                        print(partsL)
                         parts = Array(partsL)
-    //                    parts.insert(contentsOf: "\(newPair.0)", at: leftIndex)
-//                        print(parts)
-    //                    parts.insert(newPair.0.toCharacter(), at: leftIndex)
-    //                    parts.remove(at: parts.index(after: leftIndex))
                     }
                     else {
                         parts.append("0")
                     }
 
                     var rem = input[input.index(after: i+3)..<input.endIndex]
-//                    print(rem)
                     var next: [String] = Array(rem)
                     if let rightIndex = rem.firstIndex(where: { $0.isNumber() }) {
                         let right = input[rightIndex]
                         newPair.1 = currentPair.1 + right.toNumber()
 
-//                        print("rem: \(rem)")
                         var remR = rem[rem.index(after: rightIndex) ..< rem.endIndex]
                         var remL = rem[rem.startIndex ..< rightIndex]
                         remL.append("\(newPair.1)")
                         remL.append(contentsOf: remR)
-//                        print(remL)
                         next = Array(remL)
 
-//                        rem.insert(contentsOf: "\(newPair.1)", at: rightIndex)
-                        //rem.insert(newPair.1.toCharacter(), at: rightIndex)
-//                        rem.remove(at: line.index(after: rightIndex))
                     }
                     else {
                         next.insert("0", at: next.startIndex)
@@ -253,11 +224,7 @@ class SnailFishCalculator {
                         next.insert("0", at: next.startIndex)
                     }
 
-//                    print(newPair)
-//                    print(next)
-
                     parts += next
-//                    print("parts :\(parts.joined(separator: " "))")
                     success = true
                     break
                 }
@@ -285,8 +252,6 @@ class SnailFishCalculator {
                         let double = Double(part.toNumber()) / 2.0
                         let left = String(Int(double.rounded(.down)))
                         let right = String(Int(double.rounded(.up)))
-                        print(left,right)
-                        //parts.removeLast()
                         parts.append("[")
                         parts.append(left)
                         parts.append(right)
@@ -294,7 +259,6 @@ class SnailFishCalculator {
 
                         let next = input[input.index(input.startIndex, offsetBy: i+1)..<input.endIndex]
                         parts += next
-                        print(parts.joined(separator: " "))
                         success = true
                         break
                     }
@@ -317,14 +281,10 @@ class SnailFishCalculator {
             for j in input {
                 if i.input != j.input {
                     let line = add(i, j)
-                    print(line)
                     mag.append(line.magnitude())
                 }
             }
-//            break
         }
-        print(mag)
-        print(mag.count)
         return mag.max()!
     }
 
@@ -338,14 +298,11 @@ class SnailFishCalculator {
             left = result
             index += 1
         }
-//        print("SUM: \(left)")
-//        return left
         return left
     }
 
     func add(_ left: Line, _ right: Line) -> Line {
         let line = left.merge(right)
-        print(line)
         return _reduce(line)
     }
 
@@ -354,18 +311,12 @@ class SnailFishCalculator {
 
         while true {
             let ex = line.explode()
-            print("Try Exploding")
-            print(line)
-            print(ex.1)
             if ex.0 {
                 line = ex.1
                 continue
             }
 
             let sp = line._split()
-            print("Try Splitting")
-            print(line)
-            print(sp.1)
             if sp.0 {
                 line = sp.1
             }
@@ -374,182 +325,13 @@ class SnailFishCalculator {
                 break
             }
         }
-        print(line)
         return line
-    }
-
-    func add(_ left: String, _ right: String) -> String {
-        var new: String = "[\(left)"
-        new.insert(contentsOf: ",\(right)]", at: new.endIndex)
-        print(new)
-        return tryReduce(new)
-    }
-
-    func tryReduce(_ line: String) -> String {
-        var line = line
-
-        while true {
-            let exploded = tryExplode(line)
-            print("Try Exploding")
-            print(line)
-            print(exploded)
-            if exploded.0 {
-                line = exploded.1
-            }
-
-            let splitted = trySplit(line)
-            print("Try Splitting")
-            print(line)
-            print(splitted)
-            if splitted.0 {
-                line = splitted.1
-            }
-
-            if !exploded.0 && !splitted.0 {
-                break
-            }
-        }
-        print(line)
-        return line
-    }
-
-    func trySplit(_ line: String) -> (Bool,String) {
-        var parts: String = ""
-        var splited: Bool = false
-        // [[[[0,7],4],[15,[0,13]]],[1,1]]
-        // [[[[0,7],4],[[7,8],[0,13]]],[1,1]]
-        var stack: [Character] = []
-        for (i,char) in line.enumerated() {
-            if char == "[" {
-                stack.append(char)
-            }
-            if char == "]" {
-                stack.popLast()
-            }
-
-            if char.isNumber() {
-                if let last = parts.last, last.isNumber {
-                    let cur = "\(last)\(char)"
-                    print(cur)
-                    if cur.toNumber() >= 10 {
-                        let double = Double(cur.toNumber()) / 2.0
-                        let left = Int(double.rounded(.down))
-                        let right = Int(double.rounded(.up))
-                        print(left,right)
-                        parts.removeLast()
-                        parts.append(contentsOf: "[\(left),\(right)]")
-
-                        let next = line[line.index(line.startIndex, offsetBy: i+1)..<line.endIndex]
-                        parts += next
-                        print(parts)
-                        splited = true
-                        break
-                    }
-                }
-            }
-            parts.append(char)
-        }
-        return (splited,parts)
-    }
-
-    func tryExplode(_ line: String) -> (Bool,String) {
-        print(line)
-        var parts: String = ""
-        var stack: [Character] = []
-        var exploded: Bool = false
-        // [[[[[9,8],1],2],3],4]
-        // [[[[0,9],2],3],4]
-        for (i, char) in line.enumerated() {
-            if char == "[" {
-                stack.append(char)
-            }
-            if char == "]" {
-                stack.popLast()
-            }
-
-            parts.append(char)
-            if stack.count > 4 {
-                print(stack)
-                print("found")
-                print(parts)
-                parts.removeLast()
-
-                //[11,3] or [9,0]
-                let s = line.index(line.startIndex, offsetBy: i+1)
-                let e = line[s ..< line.endIndex].firstIndex(where: { $0 == "]" })!
-                var check = line[s..<e].components(separatedBy: ",").map { Int($0)! }
-                print(check)
-                let currentPair = (check.first!, check.last!)
-//                let currentPair = (line[i+1].toNumber(),line[i+3].toNumber())
-                print(currentPair)
-                var newPair = (0,0)
-                if let leftIndex = parts.lastIndex(where: { $0.isNumber }) {
-                    let left = parts[leftIndex]
-                    newPair.0 = currentPair.0 + left.toNumber()
-                    // [[[[0,7],4],[7,[[8,4],9]]],[1,1]]
-                    // [[[[0,7],4],[7,[[
-                    var partsL = parts[parts.startIndex ..< leftIndex]
-                    let partsR = parts[parts.index(after: leftIndex) ..< parts.endIndex]
-                    print(partsL)
-                    print(partsR)
-                    partsL.append(contentsOf: "\(newPair.0)")
-                    partsL.append(contentsOf: partsR)
-                    print(partsL)
-                    parts = String(partsL)
-//                    parts.insert(contentsOf: "\(newPair.0)", at: leftIndex)
-                    print(parts)
-//                    parts.insert(newPair.0.toCharacter(), at: leftIndex)
-//                    parts.remove(at: parts.index(after: leftIndex))
-                }
-                else {
-                    parts.append("0")
-                }
-                var rem = line[line.index(after: e)..<line.endIndex]
-                print(rem)
-                var next: Substring = rem
-                if let rightIndex = rem.firstIndex(where: { $0.isNumber }) {
-                    let right = line[rightIndex]
-                    newPair.1 = currentPair.1 + right.toNumber()
-
-                    print("rem: \(rem)")
-                    var remR = rem[rem.index(after: rightIndex) ..< rem.endIndex]
-                    var remL = rem[rem.startIndex ..< rightIndex]
-                    remL.append(contentsOf: "\(newPair.1)")
-                    remL.append(contentsOf: remR)
-                    print(remL)
-                    next = remL
-
-                    rem.insert(contentsOf: "\(newPair.1)", at: rightIndex)
-                    //rem.insert(newPair.1.toCharacter(), at: rightIndex)
-                    print(rem)
-                    rem.remove(at: line.index(after: rightIndex))
-//                    next = rem
-                }
-                else {
-                    next.insert("0", at: next.startIndex)
-                }
-
-                if newPair.0 != 0 , newPair.1 != 0 {
-                    next.insert("0", at: next.startIndex)
-                }
-
-                print(newPair)
-                print(next)
-
-                parts += next
-                print("parts :\(parts)")
-                exploded = true
-                break
-            }
-        }
-        return (exploded,parts)
     }
 }
 
 func partOne() -> Int {
     let calc = SnailFishCalculator.init(input)
     let line = calc.sum()
-    print(line.magnitude())
     return line.magnitude()
 }
 
@@ -558,7 +340,7 @@ func partTwo() -> Int {
     return calc.largeMagnitudeSum()
 }
 
-//print("Part One answer is: \(partOne())")
+print("Part One answer is: \(partOne())")
 print("Part Two answer is: \(partTwo())")
 
 //enum PuzzleInput: String {
