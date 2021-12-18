@@ -2,12 +2,6 @@ import Cocoa
 
 //let input = load(.input).trimmingCharacters(in: .newlines).components(separatedBy: .newlines)
 
-
-//[[[[[9,8],1],2],3],4]
-//[7,[6,[5,[4,[3,2]]]]]
-//[[6,[5,[4,[3,2]]]],1]
-//[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]
-//[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]
 let input = """
 [[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]
 [[[5,[2,8]],4],[5,[[9,9],0]]]
@@ -18,7 +12,7 @@ let input = """
 [[[[5,4],[7,7]],8],[[8,3],8]]
 [[9,3],[[9,9],[6,[4,9]]]]
 [[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]
-[[[[5,2],5],[8,[3,7]]],[[5,[7,5]],[4,4]]]
+
 """.components(separatedBy: .newlines)
 
 print(input)
@@ -68,6 +62,7 @@ extension String{
 class SnailFishCalculator {
 
     struct Line: CustomStringConvertible {
+
         let input: [String]
 
         init(_ input: [String]) {
@@ -118,31 +113,46 @@ class SnailFishCalculator {
         func magnitude() -> Int {
             var input = input
 
-            func solve() -> Int {
+            func solve() {
                 var i = 0
                 var value = 0
                 //[[1,2],[[3,4],5]]
-                while i < input.count - 1 {
-                    let first = input[i]
-                    let second = input[i+1]
-                    if first.isNumber() && second.isNumber() {
-                        print(first,second)
-                        value = first.toNumber() * 3 + second.toNumber() * 2
-                        break
+                var stack: [String] = []
+                while i < input.count {
+                    let char = input[i]
+                    stack.append(char)
+
+                    if char == "]" {
+                        let pair = stack[stack.count - 3 ..< stack.count].map { $0 }
+                        let first = pair[0]
+                        let second = pair[1]
+                        print(pair)
+                        if first.isNumber() && second.isNumber() {
+                            print(first,second)
+                            value = first.toNumber() * 3 + second.toNumber() * 2
+                            stack = stack.dropLast(4)
+                            stack.append(String(value))
+                            input = stack + input[i+1 ..< input.count]
+                            break
+                        }
                     }
                     i += 1
                 }
-                input.replaceSubrange(i-1 ..< i+3, with: [String(value)])
-                print(input)
-                return value
             }
 
             var result = 0
+            var stop = false
             while input.count > 1 {
-                result = solve()
+                var c = input.count
+                solve()
+                if c == input.count {
+                    stop = true
+                    break
+                }
+                print(input)
             }
 
-            return result
+            return stop ? 0 : input[0].toNumber()
         }
 
         func merge(_ line: Line) -> Line {
@@ -300,6 +310,24 @@ class SnailFishCalculator {
     init(_ input: [String]) {
         self.input = input.map { Line.init($0) }
     }
+
+    func largeMagnitudeSum() -> Int {
+        var mag: [Int] = []
+        for i in input {
+            for j in input {
+                if i.input != j.input {
+                    let line = add(i, j)
+                    print(line)
+                    mag.append(line.magnitude())
+                }
+            }
+//            break
+        }
+        print(mag)
+        print(mag.count)
+        return mag.max()!
+    }
+
 
     func sum() -> Line {
         var left = input[0]
@@ -521,15 +549,16 @@ class SnailFishCalculator {
 func partOne() -> Int {
     let calc = SnailFishCalculator.init(input)
     let line = calc.sum()
-    print(line)
-    return 0
+    print(line.magnitude())
+    return line.magnitude()
 }
 
 func partTwo() -> Int {
-    return 0
+    let calc = SnailFishCalculator.init(input)
+    return calc.largeMagnitudeSum()
 }
 
-print("Part One answer is: \(partOne())")
+//print("Part One answer is: \(partOne())")
 print("Part Two answer is: \(partTwo())")
 
 //enum PuzzleInput: String {
@@ -558,3 +587,11 @@ print("Part Two answer is: \(partTwo())")
 //    return content
 //}
 
+func permutations(_ n:Int, _ a: inout Array<String>) {
+    if n == 1 {print(a); return}
+    for i in 0..<n-1 {
+        permutations(n-1,&a)
+        a.swapAt(n-1, (n%2 == 1) ? 0 : i)
+    }
+    permutations(n-1,&a)
+}
