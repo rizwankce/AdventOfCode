@@ -12,9 +12,8 @@ let input = """
 [[[[5,4],[7,7]],8],[[8,3],8]]
 [[9,3],[[9,9],[6,[4,9]]]]
 [[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]
+[[[[5,2],5],[8,[3,7]]],[[5,[7,5]],[4,4]]]
 """.components(separatedBy: .newlines)
-
-//print(input)
 
 extension Character {
     func isNumber() -> Bool {
@@ -136,10 +135,9 @@ class SnailFishCalculator {
                 }
             }
 
-            var result = 0
             var stop = false
             while input.count > 1 {
-                var c = input.count
+                let c = input.count
                 solve()
                 if c == input.count {
                     stop = true
@@ -173,7 +171,7 @@ class SnailFishCalculator {
                     stack.append(char)
                 }
                 if char == "]" {
-                    stack.popLast()
+                    _ = stack.popLast()
                 }
 
                 parts.append(char)
@@ -183,7 +181,7 @@ class SnailFishCalculator {
                     }
                     parts.removeLast()
                     let currentPair = (input[i+1].toNumber(),input[i+2].toNumber())
-                    var newPair = (0,0)
+                    var newPair = (-1,-1)
                     if let leftIndex = parts.lastIndex(where: { $0.isNumber() }) {
                         let left = parts[leftIndex]
                         newPair.0 = currentPair.0 + left.toNumber()
@@ -199,13 +197,13 @@ class SnailFishCalculator {
                         parts.append("0")
                     }
 
-                    var rem = input[input.index(after: i+3)..<input.endIndex]
+                    let rem = input[input.index(after: i+3)..<input.endIndex]
                     var next: [String] = Array(rem)
                     if let rightIndex = rem.firstIndex(where: { $0.isNumber() }) {
                         let right = input[rightIndex]
                         newPair.1 = currentPair.1 + right.toNumber()
 
-                        var remR = rem[rem.index(after: rightIndex) ..< rem.endIndex]
+                        let remR = rem[rem.index(after: rightIndex) ..< rem.endIndex]
                         var remL = rem[rem.startIndex ..< rightIndex]
                         remL.append("\(newPair.1)")
                         remL.append(contentsOf: remR)
@@ -220,7 +218,7 @@ class SnailFishCalculator {
                     }
 
 
-                    if newPair.0 != 0, newPair.1 != 0 {
+                    if newPair.0 != -1, newPair.1 != -1 {
                         next.insert("0", at: next.startIndex)
                     }
 
@@ -244,7 +242,7 @@ class SnailFishCalculator {
                     stack.append(part)
                 }
                 if part == "]" {
-                    stack.popLast()
+                    _ = stack.popLast()
                 }
 
                 if part.isNumber() {
@@ -343,37 +341,28 @@ func partTwo() -> Int {
 print("Part One answer is: \(partOne())")
 print("Part Two answer is: \(partTwo())")
 
-//enum PuzzleInput: String {
-//    case input = "input"
-//    case test  = "test_input"
-//}
-//
-//func load(_ input: PuzzleInput) -> String {
-//    switch input {
-//    case .input:
-//        return load(file: "input")
-//    default:
-//        return load(file: "test_input")
-//    }
-//}
-//
-//func load(file name: String) -> String {
-//    guard let url = Bundle.main.url(forResource: name, withExtension: "txt") else {
-//        fatalError("Cannot load file with name :\(name)")
-//    }
-//
-//    guard let content = try? String(contentsOf: url, encoding: .utf8) else {
-//        fatalError("Cannot convert file contents to string for file :\(name)")
-//    }
-//
-//    return content
-//}
+enum PuzzleInput: String {
+    case input = "input"
+    case test  = "test_input"
+}
 
-func permutations(_ n:Int, _ a: inout Array<String>) {
-    if n == 1 {print(a); return}
-    for i in 0..<n-1 {
-        permutations(n-1,&a)
-        a.swapAt(n-1, (n%2 == 1) ? 0 : i)
+func load(_ input: PuzzleInput) -> String {
+    switch input {
+    case .input:
+        return load(file: "input")
+    default:
+        return load(file: "test_input")
     }
-    permutations(n-1,&a)
+}
+
+func load(file name: String) -> String {
+    guard let url = Bundle.main.url(forResource: name, withExtension: "txt") else {
+        fatalError("Cannot load file with name :\(name)")
+    }
+
+    guard let content = try? String(contentsOf: url, encoding: .utf8) else {
+        fatalError("Cannot convert file contents to string for file :\(name)")
+    }
+
+    return content
 }
