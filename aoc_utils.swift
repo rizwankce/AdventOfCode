@@ -1,5 +1,12 @@
 import Foundation
 
+extension String {
+    var numbers: [Int] {
+        split(whereSeparator: { "-0123456789".contains($0) == false })
+            .map { Int($0)! }
+    }
+}
+
 // MARK: -  grid
 
 struct Point: CustomStringConvertible, Equatable, Hashable {
