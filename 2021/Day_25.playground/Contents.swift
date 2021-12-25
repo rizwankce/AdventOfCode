@@ -83,37 +83,30 @@ struct Grid {
     }
 
     mutating func step() -> Bool {
+
+        func makeStep(_ direction: Direction) {
+            var new: Cell = [:]
+            let points = grid.filter { $0.value == direction.rawValue}.keys
+            points.forEach { p in
+                let next = p.adjacent(direction, rowCount, colCount)
+                if grid[next] == "." {
+                    new[next] = grid[p]
+                    new[p] = "."
+                }
+                else {
+                    new[p] = grid[p]
+                }
+            }
+
+            for n in new {
+                grid[n.key] = n.value
+            }
+        }
+
         let copy = grid
-        var new: [Point: Character] = [:]
-        let easters = grid.filter { $0.value == ">"}.keys
-        easters.forEach { p in
-            let next = p.adjacent(.east, rowCount, colCount)
-            if grid[next] == "." {
-                new[next] = grid[p]
-                new[p] = "."
-            }
-            else {
-                new[p] = grid[p]
-            }
-        }
 
-        for n in new {
-            grid[n.key] = n.value
-        }
-
-        new = [:]
-        let southers = grid.filter { $0.value == "v"}.keys
-        southers.forEach { p in
-            let next = p.adjacent(.south, rowCount,colCount)
-            if grid[next] == "." {
-                new[next] = grid[p]
-                new[p] = "."
-            }
-        }
-
-        for n in new {
-            grid[n.key] = n.value
-        }
+        makeStep(.east)
+        makeStep(.south)
 
         return copy == grid
     }
