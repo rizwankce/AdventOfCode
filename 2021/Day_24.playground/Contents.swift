@@ -34,6 +34,7 @@ struct Instruction: CustomStringConvertible {
     }
 }
 
+
 struct ALU {
     let instructions: [Instruction]
     let inputs: [Int]
