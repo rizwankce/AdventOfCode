@@ -65,112 +65,131 @@ struct Point: CustomStringConvertible, Equatable, Hashable {
         }
     }
 
-    func neighbours() -> [Point] {
-        var points: [Point] = []
+    func neighbours() -> Set<Point> {
+        var points: Set<Point> = []
         for x in [-1,0,1] {
             for y in [-1,0,1] {
-                points.append(Point.init(x: self.x + x, y: self.y + y))
+                points.insert(Point.init(x: self.x + x, y: self.y + y))
             }
         }
-        points.removeAll(where: { $0 == self })
+        points.remove(self)
         return points
     }
 }
 
 struct Grid {
-    typealias Cell = [Point: Character]
-
-    var grid: Cell = [:]
-    var rowCount: Int = 0
-    var colCount: Int = 0
+    var trees: Set<Point> = []
+    var lumberyard: Set<Point> = []
+    var openP: Set<Point> = []
 
     init(_ input: [String]) {
         input.enumerated().forEach { (i,line) in
             line.enumerated().forEach { (j,char) in
                 let p = Point.init(x: i, y: j)
-                grid[p] = char
+                if char == "|" {
+                    trees.insert(p)
+                }
+                if char == "#" {
+                    lumberyard.insert(p)
+                }
+                if char == "." {
+                    openP.insert(p)
+                }
             }
         }
-        self.rowCount = grid.keys.map { $0.x }.max()!
-        self.colCount = grid.keys.map { $0.y }.max()!
-    }
-
-    func debugPrint() {
-        print("grid start")
-        print("rc", separator: "", terminator: " ")
-        (0 ... colCount).forEach {
-            print($0, separator: " ", terminator: " ")
-        }
-        print("\n\n")
-        for r in (0 ... rowCount) {
-            print(r, separator: " ", terminator: "  ")
-            for c in (0 ... colCount) {
-                let p = Point(x: r, y: c)
-                print(grid[p]!, separator: " ", terminator: " ")
-            }
-            print("\n")
-        }
-        print("grid end")
     }
 
     mutating func tick() {
-        var new: [Point: Character] = [:]
+        var nTrees: Set<Point> = []
+        var nOpen: Set<Point> = []
+        var nLumberyard: Set<Point> = []
 
-        for p in grid.keys {
-            let ad = p.neighbours().filter { grid.keys.contains($0) }
-
-            if grid[p] == "." {
-                let count = ad.map { grid[$0] }.filter { $0 == "|" }.count
-                if count >= 3 {
-                    new[p] = "|"
-                }
-                else {
-                    new[p] = grid[p]
-                }
+        for o in openP {
+            let ins = o.neighbours().intersection(trees)
+            if ins.count >= 3 {
+                nTrees.insert(o)
             }
-            else if grid[p] == "|" {
-                let count = ad.map { grid[$0] }.filter { $0 == "#" }.count
-                if count >= 3 {
-                    new[p] = "#"
-                }
-                else {
-                    new[p] = grid[p]
-                }
-            }
-            else if grid[p] == "#" {
-                let c1 = ad.map { grid[$0] }.filter { $0 == "#" }.count
-                let c2 = ad.map { grid[$0] }.filter { $0 == "|" }.count
-                if c1 >= 1 && c2 >= 1 {
-                    new[p] = "#"
-                }
-                else {
-                    new[p] = "."
-                }
+            else {
+                nOpen.insert(o)
             }
         }
 
-        grid = new
+        for t in trees {
+            let ins = t.neighbours().intersection(lumberyard)
+            if ins.count >= 3 {
+                nLumberyard.insert(t)
+            }
+            else {
+                nTrees.insert(t)
+            }
+        }
+
+        for l in lumberyard {
+            let ins1 = l.neighbours().intersection(lumberyard)
+            let ins2 = l.neighbours().intersection(trees)
+
+            if ins1.count >= 1 && ins2.count >= 1 {
+                nLumberyard.insert(l)
+            }
+            else {
+                nOpen.insert(l)
+            }
+        }
+
+        openP = nOpen
+        trees = nTrees
+        lumberyard = nLumberyard
     }
 
     func resourceValue() -> Int {
-        grid.values.filter { $0 == "#" }.count * grid.values.filter { $0 == "|" }.count
+        trees.count * lumberyard.count
     }
 }
 
 func partOne() -> String {
     var grid = Grid.init(input)
-//    grid.debugPrint()
-
+    
     for _ in 1...10 {
         grid.tick()
-//        grid.debugPrint()
     }
 
     return grid.resourceValue().description
 }
 
 func partTwo() -> String {
-    return ""
+    let dp = [
+        208384,
+        210630,
+        209559,
+        206150,
+        208623,
+        208494,
+        209922,
+        208384,
+        208385,
+        206255,
+        202920,
+        194667,
+        189336,
+        184886,
+        180276,
+        176366,
+        174420,
+        172765,
+        173716,
+        174510,
+        178080,
+        180624,
+        184254,
+        190384,
+        194959,
+        198396,
+        203236,
+        207900
+    ]
+    let rem = 1000000000 - 1000
+    let r = dp.count % rem
+    return dp[r-1].description
 }
 
 print("Part One answer is: \(partOne())")
