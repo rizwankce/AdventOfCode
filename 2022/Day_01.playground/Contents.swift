@@ -1,6 +1,6 @@
 import Cocoa
 
-let input = load(.input, runFromTerminal:true).trimmingCharacters(in: .newlines)
+let input = load(.input, runFromTerminal:false).trimmingCharacters(in: .newlines)
 
 let cals = input.components(separatedBy: "\n\n")
 let total = cals
