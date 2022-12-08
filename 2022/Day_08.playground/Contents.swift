@@ -1,6 +1,6 @@
 import Cocoa
 
-let input = load(.input, runFromTerminal:true).trimmingCharacters(in: .newlines).components(separatedBy: .newlines)
+let input = load(.input, runFromTerminal:false).trimmingCharacters(in: .newlines).components(separatedBy: .newlines)
 
 struct Point: CustomStringConvertible, Equatable, Hashable {
     var x: Int
