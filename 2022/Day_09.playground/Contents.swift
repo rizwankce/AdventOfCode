@@ -38,6 +38,34 @@ struct Point: CustomStringConvertible, Equatable, Hashable {
             case .right: return Point(x: x+1, y: y)
         }
     }
+    
+    func move(_ tail: Point) -> Point {
+        var tail = tail
+        if x == tail.x { // same col
+            tail = Point(x: tail.x, y: tail.y + (y > tail.y ? 1 : -1))
+        }
+        else if y == tail.y { // same row
+            tail = Point(x: tail.x + (x > tail.x ? 1 : -1), y: tail.y)
+        }
+        else { // digonal
+            if x > tail.x && y > tail.y { // +x,+y
+                tail = Point(x: tail.x+1, y: tail.y+1)
+            }
+            else if x < tail.x && y < tail.y { // -x,-y
+                tail = Point(x: tail.x-1, y: tail.y-1)
+            }
+            else if x > tail.x && y < tail.y { // +x,-y
+                tail = Point(x: tail.x+1, y: tail.y-1)
+            }
+            else if x < tail.x && y > tail.y { // -x,+y
+                tail = Point(x: tail.x-1, y: tail.y+1)
+            }
+            else {
+                fatalError("unknwon condition")
+            }
+        }
+        return tail
+    }
 }
 
 func partOne() -> CustomStringConvertible {
@@ -51,29 +79,7 @@ func partOne() -> CustomStringConvertible {
     }
 
     func moveTail() {
-        if head.x == tail.x { // same col
-            tail = Point(x: tail.x, y: tail.y + (head.y > tail.y ? 1 : -1))
-        }
-        else if head.y == tail.y { // same row
-            tail = Point(x: tail.x + (head.x > tail.x ? 1 : -1), y: tail.y)
-        }
-        else { // digonal
-            if head.x > tail.x && head.y > tail.y { // +x,+y
-                tail = Point(x: tail.x+1, y: tail.y+1)
-            }
-            else if head.x < tail.x && head.y < tail.y { // -x,-y
-                tail = Point(x: tail.x-1, y: tail.y-1)
-            }
-            else if head.x > tail.x && head.y < tail.y { // +x,-y
-                tail = Point(x: tail.x+1, y: tail.y-1)
-            }
-            else if head.x < tail.x && head.y > tail.y { // -x,+y
-                tail = Point(x: tail.x-1, y: tail.y+1)
-            }
-            else {
-                fatalError("unknwon condition")
-            }
-        }
+        tail = head.move(tail)
         tailMoves.insert(tail)
     }
 
@@ -134,34 +140,9 @@ func partTwo() -> CustomStringConvertible {
     }
 
     func moveTail(_ i: Int) {
-        let h = grid[i-1]!
-        var knot = grid[i]!
-        if h.x == knot.x { // same col
-            knot = Point(x: knot.x, y: knot.y + (h.y > knot.y ? 1 : -1))
-        }
-        else if h.y == knot.y { // same row
-            knot = Point(x: knot.x + (h.x > knot.x ? 1 : -1), y: knot.y)
-        }
-        else { // digonal
-            if h.x > knot.x && h.y > knot.y { // +x,+y
-                knot = Point(x: knot.x+1, y: knot.y+1)
-            }
-            else if h.x < knot.x && h.y < knot.y { // -x,-y
-                knot = Point(x: knot.x-1, y: knot.y-1)
-            }
-            else if h.x > knot.x && h.y < knot.y { // +x,-y
-                knot = Point(x: knot.x+1, y: knot.y-1)
-            }
-            else if h.x < knot.x && h.y > knot.y { // -x,+y
-                knot = Point(x: knot.x-1, y: knot.y+1)
-            }
-            else {
-                fatalError("unknwon condition")
-            }
-        }
-        grid[i] = knot
+        grid[i] = grid[i-1]!.move(grid[i]!)
         if i == 9 {
-            tailMoves.insert(knot)
+            tailMoves.insert(grid[i]!)
         }
     }
 
