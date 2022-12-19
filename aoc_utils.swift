@@ -44,6 +44,12 @@ struct Point: CustomStringConvertible, Equatable, Hashable {
     }
 }
 
+extension Point {
+    func distance(_ point: Point) -> Int {
+        abs(x - point.x) + abs(y - point.y)
+    }
+}
+
 struct Grid {
     typealias Cell = [Point: Int]
 

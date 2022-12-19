@@ -1,14 +1,14 @@
 import Cocoa
 
-let input = load(.input, runFromTerminal:false).trimmingCharacters(in: .newlines).components(separatedBy: .newlines)
+let input = load(.test, runFromTerminal:true).trimmingCharacters(in: .newlines).components(separatedBy: .newlines)
 
 print(input)
 
-func partOne() -> Int {
+func partOne() -> CustomStringConvertible {
     return 0
 }
 
-func partTwo() -> Int {
+func partTwo() -> CustomStringConvertible {
     return 0
 }
 
