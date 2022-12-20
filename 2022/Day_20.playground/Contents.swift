@@ -24,7 +24,6 @@ func findCord(_ queue: [(Int,Int)]) -> [(Int,Int)] {
 //            }
         }
         let range = removed % queue.count
-//        print(cur, removed, range)
         (0 ..< range).forEach { _ in
             queue.append(queue.removeFirst())
         }
@@ -62,14 +61,13 @@ func partTwo() -> CustomStringConvertible {
     for (i,v) in input.enumerated() {
         queue.append((i,v*811589153))
     }
-    for i in 1...10 {
-        print(i)
+    for _ in 1...10 {
         queue = findCord(queue)
     }
     return sum(queue)
 }
 
-//print("Part One answer is: \(partOne())")
+print("Part One answer is: \(partOne())")
 print("Part Two answer is: \(partTwo())")
 
 enum PuzzleInput: String {
