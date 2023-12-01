@@ -1,6 +1,6 @@
 //
 //  Point.swift
-//  
+//
 //
 //  Created by Rizwan on 01/12/23.
 //
@@ -12,15 +12,13 @@ struct Point: CustomStringConvertible, Equatable, Hashable {
     var y: Int
 
     var description: String {
-        get {
-            return "(X:\(self.x) Y:\(self.y))"
-        }
+        return "(X:\(self.x) Y:\(self.y))"
     }
 
     func neighbours() -> [Point] {
         var points: [Point] = []
-        for x in [-1,0,1] {
-            for y in [-1,0,1] {
+        for x in [-1, 0, 1] {
+            for y in [-1, 0, 1] {
                 points.append(Point.init(x: self.x + x, y: self.y + y))
             }
         }
@@ -30,8 +28,8 @@ struct Point: CustomStringConvertible, Equatable, Hashable {
 
     func adjacent() -> [Point] {
         var points: [Point] = []
-        for x in [-1,0,1] {
-            for y in [-1,0,1] {
+        for x in [-1, 0, 1] {
+            for y in [-1, 0, 1] {
                 if x == 0 || y == 0 {
                     points.append(Point.init(x: self.x + x, y: self.y + y))
                 }
@@ -51,7 +49,7 @@ extension Point {
 // MARK: -  Direction
 
 extension Point {
-    mutating func move(_ count: Int,_ dir: Direction) {
+    mutating func move(_ count: Int, _ dir: Direction) {
         switch dir {
         case .east: x += count
         case .west: x -= count
@@ -61,7 +59,6 @@ extension Point {
         }
     }
 }
-
 
 enum Direction: String {
     case east = "E"

@@ -1,6 +1,6 @@
 //
 //  Int+Extra.swift
-//  
+//
 //
 //  Created by Rizwan on 01/12/23.
 //
