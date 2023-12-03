@@ -8,7 +8,7 @@
 import Foundation
 
 struct Grid {
-    typealias Cell = [Point: Int]
+    typealias Cell = [Point: Character]
 
     var grid: Cell = [:]
     let rowCount: Int
@@ -21,7 +21,7 @@ struct Grid {
         input.enumerated().forEach { (i, line) in
             line.enumerated().forEach { (j, char) in
                 let p = Point.init(x: i, y: j)
-                grid[p] = Int(String(char))!
+                grid[p] = char
             }
         }
     }
@@ -44,11 +44,11 @@ struct Grid {
         print("grid end")
     }
 
-    func adjacentValues(_ p: Point) -> [Int] {
+    func adjacentValues(_ p: Point) -> [Character] {
         p.adjacent().compactMap { grid[$0] }
     }
 
-    func neighbourValues(_ p: Point) -> [Int] {
+    func neighbourValues(_ p: Point) -> [Character] {
         p.neighbours().compactMap { grid[$0] }
     }
 }
