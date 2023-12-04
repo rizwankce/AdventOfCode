@@ -2,6 +2,7 @@ import Algorithms
 
 struct Day03: AdventDay {
     typealias Points = [[Point]]
+    typealias Grid = Grid2d<Character>
 
     var data: String
 

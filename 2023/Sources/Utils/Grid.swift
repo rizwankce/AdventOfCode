@@ -1,5 +1,5 @@
 //
-//  Grid.swift
+//  Grid2d.swift
 //
 //
 //  Created by Rizwan on 01/12/23.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct Grid {
-    typealias Cell = [Point: Character]
+struct Grid2d<T>{
+    typealias Cell = [Point: T]
 
     var grid: Cell = [:]
     let rowCount: Int
@@ -21,7 +21,7 @@ struct Grid {
         input.enumerated().forEach { (i, line) in
             line.enumerated().forEach { (j, char) in
                 let p = Point.init(x: i, y: j)
-                grid[p] = char
+                grid[p] = char as? T
             }
         }
     }
@@ -44,11 +44,11 @@ struct Grid {
         print("grid end")
     }
 
-    func adjacentValues(_ p: Point) -> [Character] {
+    func adjacentValues(_ p: Point) -> [T] {
         p.adjacent().compactMap { grid[$0] }
     }
 
-    func neighbourValues(_ p: Point) -> [Character] {
+    func neighbourValues(_ p: Point) -> [T] {
         p.neighbours().compactMap { grid[$0] }
     }
 }
