@@ -9,7 +9,7 @@ struct Day06: AdventDay {
 
     func getdistances(for time: Int) -> [Int] {
         var dists: [Int] = []
-        for t in 0 ... time {
+        for t in 0...time {
             if t == 0 {
                 dists.append(t)
             }
@@ -25,7 +25,7 @@ struct Day06: AdventDay {
         let time = input[0].numbers
         let record = input[1].numbers
         var beats: [Int] = []
-        for (i,time) in time.enumerated() {
+        for (i, time) in time.enumerated() {
             beats.append(getdistances(for: time).filter { $0 > record[i] }.count)
         }
         return beats.reduce(1, *)

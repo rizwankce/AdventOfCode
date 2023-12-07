@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Grid2d<T>{
+struct Grid2d<T> {
     typealias Cell = [Point: T]
 
     var grid: Cell = [:]

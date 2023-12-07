@@ -20,10 +20,9 @@ struct Day05: AdventDay {
         let dest: Int
         let size: Int
 
-
         init(_ numbers: [Int]) {
-            self.destination = (numbers[0] ... numbers[0]+numbers[2]-1)
-            self.source = (numbers[1] ... numbers[1]+numbers[2]-1)
+            self.destination = (numbers[0]...numbers[0] + numbers[2] - 1)
+            self.source = (numbers[1]...numbers[1] + numbers[2] - 1)
             self.src = numbers[1]
             self.dest = numbers[0]
             self.size = numbers[2]
@@ -70,18 +69,18 @@ struct Day05: AdventDay {
                     let cur = ranges.removeLast()
                     let st = cur.lowerBound
                     let ed = st + cur.count - 1
-                    let left = (st, min(ed,src))
-                    let mid = (max(st,src), min(srcEnd,ed))
+                    let left = (st, min(ed, src))
+                    let mid = (max(st, src), min(srcEnd, ed))
                     let right = (max(srcEnd, st), ed)
 
                     if left.1 > left.0 {
-                        nexts.append((left.0 ... left.1))
+                        nexts.append((left.0...left.1))
                     }
                     if mid.1 > mid.0 {
-                        founds.append((mid.0-src+dest ... mid.1-src+dest))
+                        founds.append((mid.0 - src + dest...mid.1 - src + dest))
                     }
                     if right.1 > right.0 {
-                        nexts.append((right.0 ... right.1))
+                        nexts.append((right.0...right.1))
                     }
                 }
                 ranges = nexts
@@ -130,7 +129,7 @@ struct Day05: AdventDay {
         for pair in seeds.chunks(ofCount: 2) {
             let start = pair.first!
             let range = pair.last!
-            let n = (start ... (start + range-1))
+            let n = (start...(start + range - 1))
             allSeeds.append(n)
         }
 

@@ -10,7 +10,7 @@ final class Day06Tests: XCTestCase {
 
     func testGetDistance() throws {
         let challenge = Day06(data: testData)
-        XCTAssertEqual(challenge.getdistances(for: 7), [0,6,10,12,12,10,6,0])
+        XCTAssertEqual(challenge.getdistances(for: 7), [0, 6, 10, 12, 12, 10, 6, 0])
         XCTAssertEqual(challenge.getdistances(for: 15).count, 16)
         XCTAssertEqual(challenge.getdistances(for: 30).count, 31)
     }
