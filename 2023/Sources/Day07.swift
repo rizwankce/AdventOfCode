@@ -15,7 +15,6 @@ struct Day07: AdventDay {
 
         let cards: [Character]
         let bid: Int
-        var rank: Int = 0
 
         enum Kind: CaseIterable {
             case fiveOfKind
@@ -37,7 +36,7 @@ struct Day07: AdventDay {
          High card, where all cards' labels are distinct: 23456
          */
 
-        func kindWithJoker() -> Kind {  // KTJJT
+        func kindWithJoker() -> Kind {
             guard cards.contains("J".first!) else { return kind() }
 
             let jCount = cards.filter { $0 == "J".first! }.count
@@ -59,55 +58,18 @@ struct Day07: AdventDay {
         }
 
         func kind() -> Kind {
-            let uniques = Set(cards)
-            if uniques.count == 1 {
-                return .fiveOfKind
+            let counts = Dictionary(grouping: cards, by: { $0 }).mapValues(\.count)
+
+            switch counts.values.sorted() {
+            case [5]: return .fiveOfKind
+            case [1, 4]: return .fourOfKind
+            case [2, 3]: return .fullHouse
+            case [1, 1, 3]: return .threeOfKind
+            case [1, 2, 2]: return .twoPair
+            case [1, 1, 1, 2]: return .onePair
+            case [1, 1, 1, 1, 1]: return .highCard
+            default: fatalError()
             }
-
-            if uniques.count == 2 {
-                let ua = Array(uniques)
-                let f = cards.filter({ $0 == ua.first }).count
-                let s = cards.filter({ $0 == ua.last }).count
-                if f == 4 || s == 4 {
-                    return .fourOfKind
-                }
-
-                if [3, 2].contains(f) || [3, 2].contains(s) {
-                    return .fullHouse
-                }
-                assert(true, "failed \(cards) \(ua) ")
-            }
-
-            if uniques.count == 3 {
-                /*
-                 Three of a kind, where three cards have the same label, and the remaining two cards are each different from any other card in the hand: TTT98
-                 Two pair, where two cards share one label, two other cards share a second label, and the remaining card has a third label: 23432
-                 */
-                let ua = Array(uniques)
-                let f = cards.filter({ $0 == ua[0] }).count
-                let s = cards.filter({ $0 == ua[1] }).count
-                let t = cards.filter({ $0 == ua[2] }).count
-
-                if f == 3 || s == 3 || t == 3 {
-                    return .threeOfKind
-                }
-
-                if [2, 1].contains(f) || [2, 1].contains(s) || [2, 1].contains(t) {
-                    return .twoPair
-                }
-                assert(true, "failed \(cards) \(ua) ")
-            }
-
-            if uniques.count == 4 {
-                return .onePair
-            }
-
-            if uniques.count == 5 {
-                return .highCard
-            }
-
-            assert(true, "failed \(cards)")
-            fatalError()
         }
     }
 
@@ -118,20 +80,21 @@ struct Day07: AdventDay {
         ].compactMap { $0.first }.reversed()
         let rankedKinds: [Hand.Kind] = Hand.Kind.allCases.reversed()
 
+        init(_ input: [String]) {
+            self.hands = input.map { line in
+                let com = line.components(separatedBy: " ")
+                return Hand(cards: Array(com[0]), bid: Int(com[1])!)
+            }
+        }
+
         func secondOrderRule(for h1: Hand, _ h2: Hand) -> Bool {
             var result: Bool = false
             for (c1, c2) in zip(h1.cards, h2.cards) {
                 let s1 = strengths.firstIndex(of: c1)!
-                let d1 = strengths.distance(from: strengths.startIndex, to: s1)
                 let s2 = strengths.firstIndex(of: c2)!
-                let d2 = strengths.distance(from: strengths.startIndex, to: s2)
 
-                if d1 > d2 {
-                    result = false
-                    break
-                }
-                else if d1 < d2 {
-                    result = true
+                if s1 != s2 {
+                    result = s1 < s2
                     break
                 }
             }
@@ -150,17 +113,10 @@ struct Day07: AdventDay {
                     }
                 }
 
-                guard hand.count != 0 else { continue }
-
-                if hand.count == 1 {
-                    orderedHands.append(hand[0])
+                hand = hand.sorted { h1, h2 in
+                    secondOrderRule(for: h1, h2)
                 }
-                else {
-                    hand = hand.sorted { h1, h2 in
-                        secondOrderRule(for: h1, h2)
-                    }
-                    orderedHands.append(contentsOf: hand)
-                }
+                orderedHands.append(contentsOf: hand)
             }
             var total = 0
             for (i, hand) in orderedHands.enumerated() {
@@ -170,20 +126,11 @@ struct Day07: AdventDay {
         }
     }
 
-    func parse() -> CamelCards {
-        var hands: [Hand] = []
-        for line in input {
-            let com = line.components(separatedBy: " ")
-            hands.append(Hand.init(cards: com[0].map { $0 }, bid: Int(com[1])!))
-        }
-        return CamelCards(hands: hands)
-    }
-
     func part1() -> Any {
-        parse().totalWinings()
+        CamelCards(input).totalWinings()
     }
 
     func part2() -> Any {
-        parse().totalWinings(includeJoker: true)
+        CamelCards(input).totalWinings(includeJoker: true)
     }
 }
