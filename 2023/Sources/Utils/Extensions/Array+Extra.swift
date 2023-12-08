@@ -18,6 +18,30 @@ extension Array where Element == Int {
         }
         return value
     }
+
+    func lcm() -> Int {
+        let numbers = self
+        func gcd(_ a: Int, _ b: Int) -> Int {
+            var a = a
+            var b = b
+            while b != 0 {
+                let temp = a % b
+                a = b
+                b = temp
+            }
+            return a
+        }
+
+        func lcm(_ a: Int, _ b: Int) -> Int {
+            return a * b / gcd(a, b)
+        }
+
+        guard let firstNumber = numbers.first else {
+            return 0
+        }
+
+        return numbers.dropFirst().reduce(firstNumber) { lcm($0, $1) }
+    }
 }
 
 // MARK: - Uniques from Array
