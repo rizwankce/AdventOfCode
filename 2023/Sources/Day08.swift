@@ -37,21 +37,11 @@ struct Day08: AdventDay {
             var cur = from
             var count = 0
 
-            while true {
+            while cur != to {
                 count += 1
-                let ins = instructions[i]
-                i += 1
                 let way = maps[cur]!
-                if ins == "L" {
-                    cur = way.0
-                }
-                if ins == "R" {
-                    cur = way.1
-                }
-
-                if cur == to {
-                    break
-                }
+                cur = (instructions[i] == "L") ? way.0 : way.1
+                i += 1
 
                 if i >= instructions.count {
                     i = 0
@@ -96,7 +86,7 @@ struct Day08: AdventDay {
             /*
              [13201, 14429, 18113, 18727, 20569, 22411]
              each node takes differnt steps to reach
-             to reach all nodes needs LCM 
+             to reach all nodes needs LCM
              */
             return vistTimes.lcm()
         }
