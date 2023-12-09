@@ -11,36 +11,29 @@ struct Day09: AdventDay {
         var pyramid: [[Int]] = []
         var cur = numbers
         while true {
-            var next: [Int] = []
-            for pair in cur.adjacentPairs() {
-                next.append(pair.1 - pair.0)
-            }
-            pyramid.append(next)
+            let next: [Int] = cur.adjacentPairs().map { $0.1 - $0.0 }
             if next.allSatisfy({ $0 == 0 }) {
                 break
             }
             cur = next
+            pyramid.append(next)
         }
 
         var next = 0
-        for pair in pyramid.reversed().adjacentPairs() {
-            let prev = pair.1
+        for num in pyramid.reversed() {
             if fromStart {
-                next = prev.first! - next
+                next = num.first! - next
             }
             else {
-                next = next + prev.last!
+                next = next + num.last!
             }
         }
+
         return fromStart ? numbers.first! - next : next + numbers.last!
     }
 
     func parse() -> [[Int]] {
-        var numbersArray: [[Int]] = []
-        for line in input {
-            numbersArray.append(line.numbers)
-        }
-        return numbersArray
+        input.map { $0.numbers }
     }
 
     func part1() -> Any {
