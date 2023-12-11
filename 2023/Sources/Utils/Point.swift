@@ -58,6 +58,12 @@ extension Point {
         default: fatalError()
         }
     }
+
+    func moved(_ count: Int, _ dir: Direction) -> Point {
+        var copy = self
+        copy.move(count, dir)
+        return copy
+    }
 }
 
 enum Direction: String {

@@ -11,8 +11,8 @@ final class Day09Tests: XCTestCase {
 
     func testExtrapolate() throws {
         let challenge = Day09(data: testData)
-        XCTAssertEqual(challenge.extrapolate([10,13,16,21,30,45]), 68)
-        XCTAssertEqual(challenge.extrapolate([10,13,16,21,30,45], fromStart: true), 5)
+        XCTAssertEqual(challenge.extrapolate([10, 13, 16, 21, 30, 45]), 68)
+        XCTAssertEqual(challenge.extrapolate([10, 13, 16, 21, 30, 45], fromStart: true), 5)
     }
 
     func testPart1() throws {

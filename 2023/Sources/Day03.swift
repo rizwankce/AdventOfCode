@@ -18,7 +18,7 @@ struct Day03: AdventDay {
             var numberPoints: [Point] = []
             for y in 0...grid.colCount {
                 let cell = grid.grid
-                let p = Point(x: x, y: y)
+                let p = Point(x: y, y: x)
                 let v = cell[p, default: "."]
                 if v.isWholeNumber {
                     numberPoints.append(p)
