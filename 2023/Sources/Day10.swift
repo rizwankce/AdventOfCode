@@ -69,7 +69,7 @@ struct Day10: AdventDay {
             }
         }
 
-        func loopPoints(_ breakEarly: Bool = false) -> (loop: [Point], length: Int) {
+        func loopPoints(_ breakEarly: Bool = false) -> (loop: Set<Point>, length: Int) {
             var start: Point = .init(x: 0, y: 0)
 
             for cell in cells {
@@ -82,7 +82,7 @@ struct Day10: AdventDay {
 
             let nexts = start.adjacent().filter { cells[$0, default: "."] != "." }
             var all: [Int] = []
-            var visited: [Point] = [start]
+            var visited: Set<Point> = [start]
             for n in nexts {
                 var queue: [(point: Point, prevPoint: Point, steps: Int)] = [(n, start, 1)]
                 visited = []
@@ -100,7 +100,7 @@ struct Day10: AdventDay {
 
                     let nP = next(from: point, prevPoint, cells[point]!)
                     queue.append((nP, point, steps + 1))
-                    visited.append(point)
+                    visited.insert(point)
                 }
 
                 all.append(result)
@@ -130,7 +130,7 @@ struct Day10: AdventDay {
             return ans
         }
 
-        func isPoint(_ p: Point, inPolygon polygon: [Point]) -> Bool {
+        func isPoint(_ p: Point, inPolygon polygon: Set<Point>) -> Bool {
             var count = 0
             for rx in (0..<p.x) {
                 let cp = Point(x: rx, y: p.y)
