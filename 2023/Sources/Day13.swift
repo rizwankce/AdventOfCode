@@ -8,7 +8,7 @@ struct Day13: AdventDay {
         data.trimmingCharacters(in: .newlines).components(separatedBy: "\n\n")
     }
 
-    class MirrorGrid {
+    struct MirrorGrid {
         var grid: Grid
         let smudge: Bool
 
@@ -21,61 +21,68 @@ struct Day13: AdventDay {
             grid.grid
         }
 
+        func getRanges(_ i: Int, _ end: Int) -> (ClosedRange<Int>, ClosedRange<Int>) {
+            var left = 0...i
+            var right = i + 1...end - 1
+            if left.count < right.count {
+                right = i + 1...i + left.count
+            }
+            else if left.count > right.count {
+                left = i + 1 - right.count...i
+            }
+            return (left, right)
+        }
+
+        func getCol(_ c: Int) -> [Character] {
+            (0..<grid.rowCount).map { Point(x: c, y: $0) }.map { cell[$0]! }
+        }
+
+        func getRow(_ r: Int) -> [Character] {
+            (0..<grid.colCount).map { Point(x: $0, y: r) }.map { cell[$0]! }
+        }
+
         func summarise() -> Int {
             var ans = 0
             for c in 0..<grid.colCount - 1 {
-                var ok = true
-                var count = 0
-                for dc in 0..<grid.colCount {
-                    let left = c - dc
-                    let right = c + 1 + dc
-                    if 0 <= left && left < right && right < grid.colCount {
-                        for r in 0..<grid.rowCount {
-                            let lp = Point(x: left, y: r)
-                            let rp = Point(x: right, y: r)
-                            if cell[lp] != cell[rp] {
-                                ok = false
-                                count += 1
-                            }
+                var bad = 0
+                let rr = getRanges(c, grid.colCount)
+
+                for pair in zip(rr.0.reversed(), rr.1) {
+                    for p in zip(getCol(pair.0), getCol(pair.1)) {
+                        if p.0 != p.1 {
+                            bad += 1
                         }
                     }
                 }
 
                 if smudge {
-                    if count == 1 {
+                    if bad == 1 {
                         ans += c + 1
                     }
                 }
-                else if ok {
+                else if bad == 0 {
                     ans += c + 1
                 }
             }
 
             for r in 0..<grid.rowCount - 1 {
-                var ok = true
-                var count = 0
-                for dr in 0..<grid.rowCount {
-                    let left = r - dr
-                    let right = r + 1 + dr
+                var bad = 0
+                let rr = getRanges(r, grid.rowCount)
 
-                    if 0 <= left && left < right && right < grid.rowCount {
-                        for c in 0..<grid.colCount {
-                            let lp = Point(x: c, y: left)
-                            let rp = Point(x: c, y: right)
-                            if cell[lp] != cell[rp] {
-                                ok = false
-                                count += 1
-                            }
+                for pair in zip(rr.0.reversed(), rr.1) {
+                    for p in zip(getRow(pair.0), getRow(pair.1)) {
+                        if p.0 != p.1 {
+                            bad += 1
                         }
                     }
                 }
 
                 if smudge {
-                    if count == 1 {
+                    if bad == 1 {
                         ans += (r + 1) * 100
                     }
                 }
-                else if ok {
+                else if bad == 0 {
                     ans += (r + 1) * 100
                 }
             }
