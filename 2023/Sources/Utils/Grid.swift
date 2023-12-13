@@ -5,19 +5,19 @@
 //  Created by Rizwan on 01/12/23.
 //
 
-import Foundation
-
-struct Grid2d<T> {
+struct Grid2d<T>: CustomStringConvertible {
     typealias Cell = [Point: T]
 
     var grid: Cell = [:]
     let rowCount: Int
     let colCount: Int
+    let rawInput: [String]
 
     init(_ input: [String]) {
+        self.rawInput = input
         self.rowCount = input.count
         self.colCount = input[0].count
-
+        
         input.enumerated().forEach { (i, line) in
             line.enumerated().forEach { (j, char) in
                 let p = Point.init(x: j, y: i)
@@ -30,26 +30,21 @@ struct Grid2d<T> {
         self.grid = grid
         self.rowCount = grid.keys.map { $0.y }.max()! + 1
         self.colCount = grid.keys.map { $0.x }.max()! + 1
-        print(self.rowCount)
-        print(self.colCount)
+
+        var input: [String] = []
+        for c in 0 ..< colCount {
+            var line = ""
+            for r in 0 ..< rowCount {
+                let p = Point(x: c, y: r)
+                line += grid[p] as! String
+            }
+            input.append(line)
+        }
+        self.rawInput = input
     }
 
     func debugPrint() {
-        print("grid start")
-        print("rc", separator: "", terminator: " ")
-        (0..<colCount).forEach {
-            print($0, separator: " ", terminator: " ")
-        }
-        print("\n\n")
-        for r in (0..<rowCount) {
-            print(r, separator: " ", terminator: "  ")
-            for c in (0..<colCount) {
-                let p = Point(x: c, y: r)
-                print(grid[p] ?? "&", separator: " ", terminator: " ")
-            }
-            print("\n")
-        }
-        print("grid end")
+        print(description)
     }
 
     func adjacentValues(_ p: Point) -> [T] {
@@ -58,5 +53,29 @@ struct Grid2d<T> {
 
     func neighbourValues(_ p: Point) -> [T] {
         p.neighbours().compactMap { grid[$0] }
+    }
+
+    var description: String {
+        var result = ""
+        result += "grid start" + "\n"
+        result += "rc" + "  "
+        (0..<colCount).forEach {
+            result += "\($0)" + " "
+        }
+        result += "\n\n"
+        rawInput.enumerated().forEach { (i, line) in
+            result += "\(i)" + "  " + (i < 10 ? " " : "")
+            line.enumerated().forEach { (j, char) in
+                let p = Point.init(x: j, y: i)
+                if let char = grid[p] as? Character {
+                    result += String(char) + " "
+                }
+                if j > 9 {
+                    result += " "
+                }
+            }
+            result += "\n"
+        }
+        return result
     }
 }
