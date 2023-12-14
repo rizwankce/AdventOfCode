@@ -5,7 +5,11 @@
 //  Created by Rizwan on 01/12/23.
 //
 
-struct Grid2d<T>: CustomStringConvertible {
+class Grid2d<T: Equatable>: CustomStringConvertible, Equatable {
+    static func == (lhs: Grid2d<T>, rhs: Grid2d<T>) -> Bool {
+        lhs.grid == rhs.grid
+    }
+
     typealias Cell = [Point: T]
 
     var grid: Cell = [:]
@@ -17,7 +21,7 @@ struct Grid2d<T>: CustomStringConvertible {
         self.rawInput = input
         self.rowCount = input.count
         self.colCount = input[0].count
-        
+
         input.enumerated().forEach { (i, line) in
             line.enumerated().forEach { (j, char) in
                 let p = Point.init(x: j, y: i)
@@ -32,9 +36,9 @@ struct Grid2d<T>: CustomStringConvertible {
         self.colCount = grid.keys.map { $0.x }.max()! + 1
 
         var input: [String] = []
-        for c in 0 ..< colCount {
+        for c in 0..<colCount {
             var line = ""
-            for r in 0 ..< rowCount {
+            for r in 0..<rowCount {
                 let p = Point(x: c, y: r)
                 line += grid[p] as! String
             }
