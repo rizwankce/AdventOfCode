@@ -51,6 +51,14 @@ class Grid2d<T: Equatable>: CustomStringConvertible, Equatable {
         print(description)
     }
 
+    func getColumns(_ c: Int) -> [Point] {
+        (0..<rowCount).map { Point(x: c, y: $0) }
+    }
+
+    func getRows(_ r: Int) -> [Point] {
+        (0..<colCount).map { Point(x: $0, y: r) }
+    }
+
     func adjacentValues(_ p: Point) -> [T] {
         p.adjacent().compactMap { grid[$0] }
     }
