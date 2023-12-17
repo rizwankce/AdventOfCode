@@ -15,6 +15,7 @@ struct Point: CustomStringConvertible, Equatable, Hashable {
         return "(X:\(self.x) Y:\(self.y))"
     }
 
+    // [(X:-1 Y:-1), (X:-1 Y:0), (X:-1 Y:1), (X:0 Y:-1), (X:0 Y:1), (X:1 Y:-1), (X:1 Y:0), (X:1 Y:1)]
     func neighbours() -> [Point] {
         var points: [Point] = []
         for x in [-1, 0, 1] {
@@ -26,6 +27,7 @@ struct Point: CustomStringConvertible, Equatable, Hashable {
         return points
     }
 
+    // [(X:-1 Y:0), (X:0 Y:-1), (X:0 Y:1), (X:1 Y:0)]
     func adjacent() -> [Point] {
         var points: [Point] = []
         for x in [-1, 0, 1] {
