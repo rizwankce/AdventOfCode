@@ -26,7 +26,8 @@ struct Day17: AdventDay {
         }
 
         static func == (lhs: Day17.HeapItem, rhs: Day17.HeapItem) -> Bool {
-            lhs.point == rhs.point && lhs.direction == rhs.direction && lhs.noTurnDistance == rhs.noTurnDistance && lhs.weight == rhs.weight
+            lhs.point == rhs.point && lhs.direction == rhs.direction
+                && lhs.noTurnDistance == rhs.noTurnDistance && lhs.weight == rhs.weight
         }
 
         let point: Point
@@ -52,7 +53,7 @@ struct Day17: AdventDay {
                 (move(point, .right), .right),
                 (move(point, .up), .up),
                 (move(point, .down), .down),
-                (move(point, .left), .left)
+                (move(point, .left), .left),
             ]
         }
 
@@ -105,7 +106,13 @@ struct Day17: AdventDay {
             Int(String(grid.grid[point]!))!
         }
 
-        let startHeapItem = HeapItem(point: start, direction: .right, priority: 1, noTurnDistance: 1, weight: 0)
+        let startHeapItem = HeapItem(
+            point: start,
+            direction: .right,
+            priority: 1,
+            noTurnDistance: 1,
+            weight: 0
+        )
         var frontier: Heap<HeapItem> = []
         frontier.insert(startHeapItem)
         var costSoFar: [Title: Int] = [:]
@@ -155,7 +162,13 @@ struct Day17: AdventDay {
 
                 let newCost = current.weight + getValue(next)
                 let priority = newCost + end.distance(next)
-                let item = HeapItem(point: next, direction: direction, priority: priority, noTurnDistance: newNoTurnDistance, weight: newCost)
+                let item = HeapItem(
+                    point: next,
+                    direction: direction,
+                    priority: priority,
+                    noTurnDistance: newNoTurnDistance,
+                    weight: newCost
+                )
 
                 if costSoFar.keys.contains(item.getTitle()) {
                     if costSoFar[item.getTitle()] == nil && newCost <= costSoFar[item.getTitle()]! {
