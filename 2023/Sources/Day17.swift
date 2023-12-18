@@ -121,9 +121,6 @@ struct Day17: AdventDay {
         var ans = 0
 
         outer: while let current = frontier.popMin() {
-            if frontier.count % 100000 == 0 {
-                print(frontier.count)
-            }
             let currentPoint = current.point
             let currentDirection = current.direction
             let noTurnDistance = current.noTurnDistance
@@ -146,12 +143,8 @@ struct Day17: AdventDay {
                 guard grid.grid.keys.contains(next) else { continue inner }
 
                 if isPart2 {
-                    if direction != currentDirection && noTurnDistance >= 4 {
+                    if !(newNoTurnDistance <= 10 && (direction == currentDirection || noTurnDistance >= 4)) {
                         continue
-                    }
-
-                    if newNoTurnDistance >= 10 {
-                        continue inner
                     }
                 }
                 else {
@@ -187,9 +180,7 @@ struct Day17: AdventDay {
     }
 
     func part1() -> Any {
-        //return ""
         let grid = Grid(input)
-        print(grid)
         return search(
             grid,
             Point(x: 0, y: 0),
@@ -200,7 +191,6 @@ struct Day17: AdventDay {
 
     func part2() -> Any {
         let grid = Grid(input)
-        print(grid)
         return search(
             grid,
             Point(x: 0, y: 0),
