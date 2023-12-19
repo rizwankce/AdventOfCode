@@ -143,7 +143,9 @@ struct Day17: AdventDay {
                 guard grid.grid.keys.contains(next) else { continue inner }
 
                 if isPart2 {
-                    if !(newNoTurnDistance <= 10 && (direction == currentDirection || noTurnDistance >= 4)) {
+                    if !(newNoTurnDistance <= 10
+                        && (direction == currentDirection || noTurnDistance >= 4))
+                    {
                         continue
                     }
                 }
