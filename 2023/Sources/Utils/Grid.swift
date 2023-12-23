@@ -17,6 +17,15 @@ class Grid2d<T: Equatable>: CustomStringConvertible, Equatable {
     let colCount: Int
     let rawInput: [String]
 
+    subscript(point: Point) -> T? {
+        get {
+            grid[point]
+        }
+        set(newValue) {
+            grid[point] = newValue
+        }
+    }
+
     init(_ input: [String]) {
         self.rawInput = input
         self.rowCount = input.count
@@ -57,6 +66,18 @@ class Grid2d<T: Equatable>: CustomStringConvertible, Equatable {
 
     func getRows(_ r: Int) -> [Point] {
         (0..<colCount).map { Point(x: $0, y: r) }
+    }
+
+    func isValid(_ point: Point) -> Bool {
+        grid.keys.contains(point)
+    }
+
+    func neighbours(_ p: Point) -> [Point] {
+        p.neighbours()
+    }
+
+    func adjacents(_ p: Point) -> [Point] {
+        p.adjacent()
     }
 
     func adjacentValues(_ p: Point) -> [T] {
