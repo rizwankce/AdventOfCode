@@ -29,7 +29,7 @@ struct Day23: AdventDay {
 
             while !queue.isEmpty {
                 let (current, steps, seens) = queue.removeFirst()
-                //print(current, steps, seens.count)
+
                 var seen = seens
 
                 if seen.contains(current) {
@@ -73,56 +73,63 @@ struct Day23: AdventDay {
         let grid = Grid(input)
         let start = Point(x: 1, y: 0)
         let end = Point(x: grid.colCount - 2, y: grid.rowCount - 1)
-        func search(_ grid: Grid, _ start: Point, _ end: Point) -> Int {
-            var queue: [(Point, Int, Set<Point>)] = [(start, 0, [])]
-            var result = 0
-            var count = 0
 
-            while !queue.isEmpty {
-                let (current, steps, seens) = queue.removeFirst()
-                //print(current, steps, seens.count)
-                var seen = seens
-                count += 1
+        func findPath(current: Point, seen: [Point], paths: [Point: [(Point, Int)]]) -> Int {
+            if current == end {
+                return 0
+            }
 
-                if count % 10_000 == 0 {
-                    //print(count)
+            var best: Int = 0
+            for (adj, steps) in paths[current]! where !seen.contains(adj) {
+                if !seen.contains(adj) {
+                    let bestFromHere = findPath(current: adj, seen: seen + [adj], paths: paths)
+                    best = max(best, bestFromHere + steps)
                 }
+            }
 
-                if seen.contains(current) {
-                    continue
-                }
-                seen.insert(current)
+            return best
+        }
 
-                if !(grid.grid.keys.contains(current) && grid.grid[current] != "#") {
-                    continue
-                }
+        func longestHike(_ grid: Grid, _ start: Point) -> [Point: [(Point, Int)]] {
+            var junctions: [Point] = [start, end]
+            for kv in grid.grid {
+                let point = kv.key
+                let value = kv.value
 
-                if current == end {
-                    result = max(result, steps)
-                    print(result)
-                    continue
-                }
-
-                //                let lv = grid.grid[current]
-                //                if ["^", ">", "v", "<"].contains(lv) {
-                //                    let next = nextPoint(current, lv!)
-                //                    queue.append((next, steps+1, seen))
-                //                    continue
-                //                }
-
-                for next in current.adjacent() {
-                    if grid.grid.keys.contains(next) {
-                        let nv = grid.grid[next]
-                        if nv != "#" && !seen.contains(next) {
-                            //seen.insert(next)
-                            queue.append((next, steps + 1, seen))
-                        }
+                if value == "." {
+                    let nexts = point.adjacent().filter { grid.isValid($0) && grid[$0] != "#" }
+                    if nexts.count > 2 {
+                        junctions.append(point)
                     }
                 }
             }
 
-            return result
+            junctions = junctions.uniques
+
+            var graph: [Point: [(Point, Int)]] = [:]
+            for junction in junctions {
+                let adj = junction.adjacent().filter { grid.isValid($0) && grid[$0] != "#" }
+
+                for a in adj {
+                    var cur = a
+                    var path = [junction, a]
+                    inner: while !junctions.contains(cur) {
+                        path.append(cur)
+                        let nexts = cur.adjacent().filter {
+                            grid.isValid($0) && grid[$0] != "#" && !path.contains($0)
+                        }
+
+                        if nexts.isEmpty { continue inner }
+                        if nexts.count != 1 { break inner }
+                        cur = nexts[0]
+                    }
+                    graph[junction, default: []].append((cur, path.count - 1))
+                }
+            }
+            return graph
         }
-        return search(grid, start, end)
+
+        let graph = longestHike(grid, start)
+        return findPath(current: start, seen: [start], paths: graph)
     }
 }
