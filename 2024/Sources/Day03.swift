@@ -36,23 +36,23 @@ struct Day03: AdventDay {
 		var result = 0
 		var enabled = true
 
-        let regex = Regex {
-            Anchor.startOfLine
-            "mul("
-            Capture {
-                Repeat(1...3) {
-                    One(.digit)
-                }
-            }
-            ","
-            Capture {
-                Repeat(1...3) {
-                    One(.digit)
-                }
-            }
-            ")"
-        }.anchorsMatchLineEndings()
-        
+		let regex = Regex {
+			Anchor.startOfLine
+			"mul("
+			Capture {
+				Repeat(1...3) {
+					One(.digit)
+				}
+			}
+			","
+			Capture {
+				Repeat(1...3) {
+					One(.digit)
+				}
+			}
+			")"
+		}.anchorsMatchLineEndings()
+
 		for index in data.indices {
 			let cur = data[index..<data.endIndex]
 			if cur.hasPrefix("do()") {
