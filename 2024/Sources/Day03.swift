@@ -35,6 +35,24 @@ struct Day03: AdventDay {
 	func part2() -> Any {
 		var result = 0
 		var enabled = true
+
+        let regex = Regex {
+            Anchor.startOfLine
+            "mul("
+            Capture {
+                Repeat(1...3) {
+                    One(.digit)
+                }
+            }
+            ","
+            Capture {
+                Repeat(1...3) {
+                    One(.digit)
+                }
+            }
+            ")"
+        }.anchorsMatchLineEndings()
+        
 		for index in data.indices {
 			let cur = data[index..<data.endIndex]
 			if cur.hasPrefix("do()") {
@@ -45,23 +63,6 @@ struct Day03: AdventDay {
 			}
 
 			if enabled {
-				let regex = Regex {
-					Anchor.startOfLine
-					"mul("
-					Capture {
-						Repeat(1...3) {
-							One(.digit)
-						}
-					}
-					","
-					Capture {
-						Repeat(1...3) {
-							One(.digit)
-						}
-					}
-					")"
-				}.anchorsMatchLineEndings()
-
 				if let output = cur.firstMatch(of: regex)?.output {
 					result += (Int(output.1)! * Int(output.2)!)
 				}
