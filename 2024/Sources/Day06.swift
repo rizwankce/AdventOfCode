@@ -9,39 +9,39 @@ struct Day06: AdventDay {
 		Grid(data.lines)
 	}
 
-    func getStartAndPath() -> (Point,Set<Point>) {
-        var start = Point(x: 0, y: 0)
-        outer: for r in (0..<grid.rowCount) {
-            for c in (0..<grid.colCount) {
-                let p = Point(x: c, y: r)
-                if grid[p] == "^" {
-                    start = p
-                    break outer
-                }
-            }
-        }
+	func getStartAndPath() -> (Point, Set<Point>) {
+		var start = Point(x: 0, y: 0)
+		outer: for r in (0..<grid.rowCount) {
+			for c in (0..<grid.colCount) {
+				let p = Point(x: c, y: r)
+				if grid[p] == "^" {
+					start = p
+					break outer
+				}
+			}
+		}
 
-        var visited: Set<Point> = [start]
-        var direction: Direction = .north
-        var cur = start
-        while true {
-            let newP = cur.moved(1, direction)
-            guard grid[newP] != nil else {
-                break
-            }
-            if grid[newP] == "#" {
-                direction.turn(90, .right)
-            }
-            else {
-                visited.insert(newP)
-                cur = newP
-            }
-        }
-        return (start,visited)
-    }
+		var visited: Set<Point> = [start]
+		var direction: Direction = .north
+		var cur = start
+		while true {
+			let newP = cur.moved(1, direction)
+			guard grid[newP] != nil else {
+				break
+			}
+			if grid[newP] == "#" {
+				direction.turn(90, .right)
+			}
+			else {
+				visited.insert(newP)
+				cur = newP
+			}
+		}
+		return (start, visited)
+	}
 
 	func part1() -> Any {
-        getStartAndPath().1.count
+		getStartAndPath().1.count
 	}
 
 	func isLoop(_ g: Grid, start: Point, block: Point) -> Bool {
@@ -79,9 +79,9 @@ struct Day06: AdventDay {
 	}
 
 	func part2() -> Any {
-        let result = getStartAndPath()
-        let start = result.0
-        let path = result.1
+		let result = getStartAndPath()
+		let start = result.0
+		let path = result.1
 		return path.filter { isLoop(grid, start: start, block: $0) }.count
 	}
 }
