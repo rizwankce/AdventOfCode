@@ -40,6 +40,8 @@ struct Point: CustomStringConvertible, Equatable, Hashable {
 		points.removeAll(where: { $0 == self })
 		return points
 	}
+
+	static let start = Point(x: 0, y: 0)
 }
 
 extension Point {
