@@ -8,7 +8,7 @@
 import Foundation
 
 extension Character {
-	func intValue() -> Int? {
-		Int(String(self))
-	}
+  func intValue() -> Int? {
+    Int(String(self))
+  }
 }
