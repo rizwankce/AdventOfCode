@@ -47,7 +47,6 @@ struct Day12: AdventDay {
       print(region.name, all)
       var p2: [Point] = []
       for p in all {
-        var keep = true
         let right = Point(x: p.x + 0, y: p.y + 1)
         if !all.contains(right) {
           p2.append(p)
