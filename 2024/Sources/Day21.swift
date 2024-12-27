@@ -35,70 +35,53 @@ struct Day21: AdventDay {
     }
 
     func path(_ grid: Grid, _ start: Point, _ end: Character) -> [State] {
-      []
-    }
+      var queue: [State] = [State(point: start, path: [], moves: [])]
+      var seen: [Point: Int] = [:]
+      seen[start] = 0
+      var allStates: [State] = []
+      var best = Int.max
+      inner: while !queue.isEmpty {
+        let state = queue.removeFirst()
+        //print(state)
+        let point = state.point
+        let path = state.path
+        let moves = state.moves
 
-    func combineAllPaths(_ paths: [[Any]]) -> [[Character]] {
-      // Handle empty or single path case
-      guard paths.count > 0 else { return [] }
-
-      // Function to flatten a single path if it contains nested arrays
-      func flattenPath(_ path: [Any]) -> [[Character]] {
-        var result: [[Character]] = []
-
-        func processElement(_ element: Any) -> [Character] {
-          if let char = element as? Character {
-            return [char]
-          } else if let array = element as? [Character] {
-            return array
-          } else if let nestedArray = element as? [[Character]] {
-            return nestedArray[0]  // Take first path if multiple options
+        if end == grid[point] {
+          if moves.count <= best {
+            best = moves.count
+            allStates.append(state)
           }
-          return []
+          continue inner
         }
 
-        if let firstElement = path.first {
-          if path.count == 1 && firstElement is [[Character]] {
-            // Handle case where element is array of path options
-            if let pathOptions = firstElement as? [[Character]] {
-              return pathOptions
-            }
-          } else {
-            // Process each element and combine them
-            var currentPath: [Character] = []
-            for element in path {
-              currentPath.append(contentsOf: processElement(element))
-            }
-            result.append(currentPath)
-          }
+        if moves.count > best {
+          continue inner
         }
 
-        return result.isEmpty ? [[]] : result
+        let all: [Point: Character] = [
+          point.moved(1, .east): ">",
+          point.moved(1, .west): "<",
+          point.moved(1, .north): "^",
+          point.moved(1, .south): "v",
+        ]
+
+        for (neighbor, direction) in all {
+          if grid.isValid(neighbor) && grid[neighbor] != "." {
+            if seen[neighbor] == nil || seen[neighbor] == moves.count {
+              seen[neighbor] = moves.count
+              queue.append(
+                State(point: neighbor, path: path + [direction], moves: moves + [grid[neighbor]!])
+              )
+            }
+          }
+        }
       }
 
-      // Start with the first path
-      var result = flattenPath(paths[0])
-
-      // Combine with each subsequent path
-      for i in 1..<paths.count {
-        let currentPaths = flattenPath(paths[i])
-        var newResult: [[Character]] = []
-
-        // Combine each existing path with each new path option
-        for existingPath in result {
-          for newPath in currentPaths {
-            newResult.append(existingPath + newPath)
-          }
-        }
-
-        result = newResult
-      }
-
-      return result
+      return allStates
     }
 
-    func path(_ grid: Grid, _ sequence: [Character]) -> [Character] {
-
+    func path(_ grid: Grid, _ sequence: [Character]) -> [[Character]] {
       var start = Point.start
       for r in (0..<grid.rowCount) {
         for c in (0..<grid.colCount) {
@@ -110,115 +93,77 @@ struct Day21: AdventDay {
         }
       }
 
-      var new: [[State]] = []
+      var new: [[Character]] = [[]]
       var current = start
       for s in sequence {
-        var queue: [State] = [State(point: current, path: [], moves: [])]
-        var seen: [Point: Int] = [:]
-        seen[current] = 0
-        var allStates: [State] = []
-        var best = Int.max
-        inner: while !queue.isEmpty {
-          let state = queue.removeFirst()
-          //print(state)
-          let point = state.point
-          let path = state.path
-          let moves = state.moves
-
-          //                    if seen.contains(point) {
-          //                        continue inner
-          //                    }
-          //                    seen.insert(point)
-
-          if s == grid[point] {
-            if moves.count <= best {
-              best = moves.count
-              allStates.append(state)
-            }
-            continue inner
-            //return (point, path)
-          }
-
-          if moves.count > best {
-            continue inner
-          }
-
-          let all: [Point: Character] = [
-            point.moved(1, .east): ">",
-            point.moved(1, .west): "<",
-            point.moved(1, .north): "^",
-            point.moved(1, .south): "v",
-          ]
-          //print(grid[point]!, all.map { grid[$0.key] })
-          for (neighbor, direction) in all {
-            if grid.isValid(neighbor) && grid[neighbor] != "." {
-              //                            print(moves.count, seen[neighbor])
-              if seen[neighbor] == nil || seen[neighbor] == moves.count {
-                //print(grid[neighbor])
-
-                seen[neighbor] = moves.count
-                queue.append(
-                  State(point: neighbor, path: path + [direction], moves: moves + [grid[neighbor]!])
-                )
-              }
-            }
-          }
-        }
-
-        //                if allStates.count == 1 {
-        //                    new.append(allStates.flatMap({ $0.moves}))
-        //                }
-        //                else {
-        //                    var nn: [[Character]] = new
-        //
-        //                    for state in allStates {
-        //                        var op: [Character] = []
-        //                        for i in 0 ... nn.count-1 {
-        //                            op.append(contentsOf: nn[i] + state.moves + ["A"])
-        //                        }
-        //                        nn.append(op)
-        //                    }
-        //                    new = nn
-        //                }
-
-        //                for state in allStates {
-        //                    new.append(state.moves)
-        //                }
-
-        new.append(allStates)
-
+        let allStates = path(grid, current, s)
         current = allStates.first!.point
-        //print(allStates)
-        //print(new)
-      }
-      print(new.map { $0.map { $0.moves } })
+        let mvs = allStates.map { $0.path }
 
-      var chars: [String] = [""]
-      for states in new {
-        var nns: String = ""
-        for (j, state) in states.enumerated() {
-          nns += state.moves + "A" + "\n"
-        }
-
-        var j = 0
-        for c in nns.components(separatedBy: "\n") {
-          for i in 0..<chars.count {
-            if i + j >= chars.count {
-              chars.append(chars[i])
-            }
-            chars[i + j] = chars[i + j] + c
+        if mvs.count == 1 {
+          for i in 0..<new.count {
+            new[i] += mvs[0] + "A"
           }
-          j += 1
+        } else {
+          var n2: [[Character]] = []
+          for n in new {
+            for i in 0..<mvs.count {
+              n2.append(n + mvs[i] + "A")
+            }
+          }
+          new = n2
         }
-      }
 
-      print(chars)
-      return []
+      }
+      //print(new)
+
+      return new
     }
 
     func complexity() -> Int {
-      let path = path(numberPad, "029A".map { $0 })
-      //print(path)
+      let paths = path(numberPad, "029A".map { $0 })
+      var best = Int.max
+      var next: [[Character]] = []
+      for p in paths {
+        if p.count <= best {
+          best = p.count
+          next.append(p)
+        }
+      }
+      print(next.map { $0.count }.min()!)
+      var p2: [[Character]] = []
+      for n in next {
+        let r = path(directionalPad, n)
+        r.forEach {
+          p2.append($0)
+        }
+      }
+
+      best = Int.max
+      next = []
+      for p in p2 {
+        if p.count <= best {
+          best = p.count
+          next.append(p)
+        }
+      }
+      print(next.map { $0.count })
+      var p3: [[Character]] = []
+      for n in next {
+        let r = path(directionalPad, n)
+        r.forEach {
+          p3.append($0)
+        }
+      }
+      best = Int.max
+      for p in p3 {
+        if p.count <= best {
+          best = p.count
+          next.append(p)
+        }
+      }
+      print(next.map { $0.count }.min()!)
+
       return 0
     }
   }
